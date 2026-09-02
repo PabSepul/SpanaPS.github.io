@@ -22,6 +22,19 @@
   <title>Código Cero — Aprende programación creando</title>
   <script>
     (() => {
+      const publicHosts = ["intenta.cl", "www.intenta.cl"];
+      const showMaintenance = publicHosts.includes(window.location.hostname)
+        || new URLSearchParams(window.location.search).has("maintenance");
+
+      if (showMaintenance) {
+        document.documentElement.classList.add("is-maintenance");
+        document.title = "Código Cero — Estamos preparando algo nuevo";
+        const robots = document.createElement("meta");
+        robots.name = "robots";
+        robots.content = "noindex, nofollow";
+        document.head.append(robots);
+      }
+
       const preferred = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
       try {
         const saved = localStorage.getItem("codigo-cero.theme");
@@ -35,9 +48,20 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&display=swap" rel="stylesheet">
   <link rel="icon" href="favicon.svg?v=20260902-bmw1" type="image/svg+xml">
-  <link rel="stylesheet" href="styles.css?v=20260902-bmw-dark2">
+  <link rel="stylesheet" href="styles.css?v=20260902-maintenance1">
 </head>
 <body>
+  <section class="maintenance-screen" aria-labelledby="maintenance-title">
+    <div class="maintenance-shell">
+      <div class="maintenance-brand"><span aria-hidden="true">&gt;_</span> Código Cero</div>
+      <p class="maintenance-kicker">Actualización en curso</p>
+      <h1 id="maintenance-title">Estamos preparando la siguiente etapa.</h1>
+      <p>La ruta de Python está creciendo con más niveles, nuevos proyectos y mejores explicaciones.</p>
+      <div class="maintenance-progress" aria-hidden="true"><span></span></div>
+      <small>Volvemos pronto.</small>
+    </div>
+  </section>
+
   <a class="skip-link" href="#contenido">Saltar al contenido</a>
 
   <header class="site-header">
