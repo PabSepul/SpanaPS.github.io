@@ -1,4 +1,5 @@
 const PROGRESS_KEY = "codigo-cero.python-projects.completed";
+const THEME_KEY = "codigo-cero.theme";
 
 const PROJECT_DEFAULTS = {
   1: 'print("Estoy aprendiendo Python")',
@@ -19,10 +20,31 @@ const routeProgressText = document.querySelector("#route-progress-text");
 const routeProgressFill = document.querySelector("#route-progress-fill");
 const pythonFinish = document.querySelector("#python-finish");
 const currentYear = document.querySelector("#current-year");
+const themeToggle = document.querySelector("#theme-toggle");
+const themeToggleLabel = document.querySelector("#theme-toggle-label");
+const themeColor = document.querySelector('meta[name="theme-color"]');
 
 let activeProject = 1;
 let completedProjects = loadProgress();
 const validRuns = { 1: false, 2: false, 3: false };
+
+function saveTheme(theme) {
+  try {
+    localStorage.setItem(THEME_KEY, theme);
+  } catch {
+    // El selector sigue funcionando aunque el navegador bloquee el almacenamiento.
+  }
+}
+
+function applyTheme(theme, persist = false) {
+  const isDark = theme === "dark";
+  document.documentElement.dataset.theme = isDark ? "dark" : "light";
+  themeToggle.setAttribute("aria-pressed", String(isDark));
+  themeToggle.setAttribute("aria-label", isDark ? "Activar modo claro" : "Activar modo oscuro");
+  themeToggleLabel.textContent = isDark ? "Claro" : "Oscuro";
+  themeColor.content = isDark ? "#151a20" : "#1c69d4";
+  if (persist) saveTheme(isDark ? "dark" : "light");
+}
 
 function hasValue(object, key) {
   return Object.prototype.hasOwnProperty.call(object, key);
@@ -307,7 +329,12 @@ projectTargetButtons.forEach((button) => {
 
 previousProject.addEventListener("click", () => activateProject(activeProject - 1));
 nextProject.addEventListener("click", () => activateProject(activeProject + 1));
+themeToggle.addEventListener("click", () => {
+  const nextTheme = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
+  applyTheme(nextTheme, true);
+});
 
 currentYear.textContent = new Date().getFullYear();
+applyTheme(document.documentElement.dataset.theme === "dark" ? "dark" : "light");
 renderProgress();
 activateProject([1, 2, 3].find((project) => !completedProjects.has(project)) || 1);

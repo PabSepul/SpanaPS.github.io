@@ -4,24 +4,38 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="Elige qué aprender y comienza con tres mini proyectos de Python para entender sus fundamentos y practicar en el navegador.">
-  <meta name="theme-color" content="#7132f5">
+  <meta name="theme-color" content="#1c69d4">
   <meta property="og:type" content="website">
   <meta property="og:locale" content="es_CL">
   <meta property="og:url" content="https://www.intenta.cl/">
   <meta property="og:title" content="Código Cero — Aprende programación creando">
   <meta property="og:description" content="Elige una tecnología y empieza con tres mini proyectos de Python.">
-  <meta property="og:image" content="https://www.intenta.cl/og.png">
-  <meta property="og:image:alt" content="Código Cero: tu primer programa empieza con una línea.">
-  <meta property="og:image:width" content="1536">
-  <meta property="og:image:height" content="1024">
+  <meta property="og:image" content="https://www.intenta.cl/og.png?v=20260902-bmw">
+  <meta property="og:image:alt" content="Código Cero — Aprende programación creando.">
+  <meta property="og:image:width" content="1731">
+  <meta property="og:image:height" content="909">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Código Cero — Aprende programación creando">
   <meta name="twitter:description" content="Elige una tecnología y empieza con tres mini proyectos de Python.">
-  <meta name="twitter:image" content="https://www.intenta.cl/og.png">
-  <meta name="twitter:image:alt" content="Código Cero: tu primer programa empieza con una línea.">
+  <meta name="twitter:image" content="https://www.intenta.cl/og.png?v=20260902-bmw">
+  <meta name="twitter:image:alt" content="Código Cero — Aprende programación creando.">
   <title>Código Cero — Aprende programación creando</title>
-  <link rel="icon" href="favicon.svg?v=20260902-1" type="image/svg+xml">
-  <link rel="stylesheet" href="styles.css?v=20260902-1">
+  <script>
+    (() => {
+      const preferred = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+      try {
+        const saved = localStorage.getItem("codigo-cero.theme");
+        document.documentElement.dataset.theme = saved === "dark" || saved === "light" ? saved : preferred;
+      } catch {
+        document.documentElement.dataset.theme = preferred;
+      }
+    })();
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&display=swap" rel="stylesheet">
+  <link rel="icon" href="favicon.svg?v=20260902-bmw1" type="image/svg+xml">
+  <link rel="stylesheet" href="styles.css?v=20260902-bmw-dark2">
 </head>
 <body>
   <a class="skip-link" href="#contenido">Saltar al contenido</a>
@@ -36,7 +50,14 @@
       <a href="#ruta">Ruta Python</a>
       <a href="#metodo">Cómo funciona</a>
     </nav>
-    <a class="header-cta" href="#proyectos">Comenzar</a>
+    <div class="header-actions">
+      <button class="theme-toggle" id="theme-toggle" type="button" aria-pressed="false" aria-label="Activar modo oscuro">
+        <svg class="theme-icon theme-icon-moon" aria-hidden="true" viewBox="0 0 24 24"><path d="M20.5 14.4A8.5 8.5 0 0 1 9.6 3.5a8.5 8.5 0 1 0 10.9 10.9Z"/></svg>
+        <svg class="theme-icon theme-icon-sun" aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.42-1.41M17.66 6.34l1.41-1.41"/></svg>
+        <span id="theme-toggle-label">Oscuro</span>
+      </button>
+      <a class="header-cta" href="#proyectos">Comenzar</a>
+    </div>
   </header>
 
   <main id="contenido">
@@ -259,6 +280,6 @@ print(f"{horas} h y {resto} min")</textarea></div>
     </div>
   </footer>
 
-  <script src="script.js?v=20260902-1"></script>
+  <script src="script.js?v=20260902-bmw-dark2"></script>
 </body>
 </html>
