@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="es-CL">
+<html lang="es-CL" class="is-maintenance">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -33,6 +33,8 @@
         robots.name = "robots";
         robots.content = "noindex, nofollow";
         document.head.append(robots);
+      } else {
+        document.documentElement.classList.remove("is-maintenance");
       }
 
       const preferred = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
@@ -44,11 +46,13 @@
       }
     })();
   </script>
+  <script src="review-preview.js?v=20260903-review1"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&display=swap" rel="stylesheet">
   <link rel="icon" href="favicon.svg?v=20260902-bmw1" type="image/svg+xml">
   <link rel="stylesheet" href="styles.css?v=20260902-checkpoints2">
+  <link rel="stylesheet" href="learning-review.css?v=20260903-review1">
 </head>
 <body class="course-page">
   <section class="maintenance-screen" aria-labelledby="maintenance-title">
@@ -88,10 +92,10 @@
     <section class="python-hero" id="inicio" aria-labelledby="python-title">
       <div class="hero-copy">
         <p class="eyebrow"><span></span> Tu primera ruta · Python</p>
-        <h2 id="python-title">Aprende Python recorriendo tres niveles prácticos.</h2>
+        <h1 id="python-title">Aprende Python recorriendo tres niveles prácticos.</h1>
         <p class="hero-lead">Parte con los fundamentos, aprende a tomar decisiones y termina construyendo funciones útiles.</p>
         <div class="hero-actions">
-          <a class="button button-primary" href="#proyectos">Abrir el proyecto 1 <span aria-hidden="true">→</span></a>
+          <a class="button button-primary" href="#proyectos">Retomar la práctica <span aria-hidden="true">→</span></a>
           <span class="route-duration">3 niveles · 12 proyectos · a tu ritmo</span>
         </div>
         <ul class="hero-notes" aria-label="Características de la ruta">
@@ -123,6 +127,7 @@
         <div class="route-progress" aria-label="Progreso de la ruta"><div><span>Tu avance</span><strong id="route-progress-text">0 de 12</strong></div><div class="progress-track" aria-hidden="true"><span id="route-progress-fill"></span></div></div>
       </div>
 
+      <aside class="lesson-primer"><h3>Antes de comenzar</h3><p>No necesitas experiencia previa. En los cuatro primeros proyectos editarás instrucciones sencillas; los ocho siguientes son simulaciones con una estructura fija para explorar datos, condiciones y funciones.</p><ol><li>Lee el ejemplo y predice qué mostrará.</li><li>Cambia solo un dato o instrucción permitida y comprueba el resultado.</li><li>Completa los cuatro proyectos del nivel; luego realiza su examen de repaso.</li></ol><p>Los exámenes se aprueban con 4 de 5 respuestas. Puedes avanzar de nivel sin rendirlos, pero necesitas los tres para cerrar esta ruta introductoria. No otorgan una certificación profesional.</p></aside>
       <div class="level-tabs" id="level-tabs" role="tablist" aria-label="Niveles de Python"></div>
 
       <div class="curriculum-layout">
@@ -137,7 +142,7 @@
               <div class="project-lesson">
                 <p class="project-kicker" id="course-project-kicker"></p>
                 <h3 id="course-project-title"></h3>
-                <p id="course-project-summary"></p>
+                <p id="course-project-summary"></p><p class="learning-save-note" id="python-lab-scope"></p>
                 <div class="concept-card lesson-explanation">
                   <code id="course-project-example"></code>
                   <div><h4>Qué aprenderás</h4><p id="course-project-explanation"></p><ul id="course-project-concepts"></ul></div>
@@ -187,7 +192,7 @@
             <div class="exam-head">
               <div>
                 <p class="eyebrow"><span></span> <span id="exam-kicker">Mini examen</span></p>
-                <h3 id="exam-title"></h3>
+                <h3 id="exam-title" tabindex="-1"></h3>
                 <p id="exam-intro"></p>
               </div>
               <button class="exam-ghost" id="exam-close" type="button">Cerrar</button>
@@ -196,7 +201,7 @@
             <div class="exam-actions">
               <button class="button button-primary" id="exam-submit" type="button">Revisar respuestas</button>
               <button class="exam-ghost" id="exam-retry" type="button" hidden>Intentar de nuevo</button>
-              <p class="exam-result" id="exam-result" aria-live="polite"></p>
+              <p class="exam-result" id="exam-result" aria-live="polite" tabindex="-1"></p>
             </div>
           </section>
           <div class="python-finish" id="course-finish" hidden>
@@ -218,7 +223,7 @@
         <article><span>02</span><h3>Intenta</h3><p>Edita el código y solicita pistas solamente cuando las necesites.</p></article>
         <article><span>03</span><h3>Comprueba</h3><p>La validación muestra qué funciona y qué falta por resolver.</p></article>
       </div>
-      <div class="final-cta"><div><p>La ruta comienza desde cero.</p><h2>Tu siguiente proyecto siempre está claro.</h2></div><a class="button button-light" href="#proyectos">Abrir nivel 1 <span aria-hidden="true">↑</span></a></div>
+      <div class="final-cta"><div><p>La ruta comienza desde cero.</p><h2>Tu siguiente proyecto siempre está claro.</h2></div><a class="button button-light" href="#proyectos">Ir a mis proyectos <span aria-hidden="true">↑</span></a></div>
     </section>
   </main>
 
@@ -230,7 +235,8 @@
     </div>
   </footer>
 
-  <script src="site.js?v=20260902-depth1"></script>
-  <script src="python.js?v=20260902-checkpoints1"></script>
+  <script src="learning-state.js?v=20260903-review1"></script>
+  <script src="site.js?v=20260903-review1"></script>
+  <script src="python.js?v=20260903-review1"></script>
 </body>
 </html>

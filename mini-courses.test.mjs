@@ -273,7 +273,7 @@ for (const name of allPages) {
   const boot = html.match(/<script>([\s\S]*?)<\/script>/)[1];
   for (const hostname of ["localhost", "intenta.cl", "www.intenta.cl"]) {
     for (const search of ["", "?maintenance"]) {
-      const classes = []; const root = { classList: { add: (name) => classes.push(name) }, dataset: {} };
+      const classes = []; const root = { classList: { add: (name) => classes.push(name), remove: (name) => { const i = classes.indexOf(name); if (i >= 0) classes.splice(i, 1); } }, dataset: {} };
       const document = { documentElement: root, head: { append() {} }, createElement: () => ({}) };
       vm.runInNewContext(boot, { document, window: { location: { hostname, search }, matchMedia: () => ({ matches: false }) }, URLSearchParams, localStorage: { getItem: () => "dark" } });
       assert.equal(classes.includes("is-maintenance"), hostname !== "localhost" || Boolean(search));

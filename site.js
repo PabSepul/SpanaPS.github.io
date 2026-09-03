@@ -31,3 +31,29 @@ document.querySelectorAll("[data-current-year]").forEach((element) => {
 });
 
 applySiteTheme(document.documentElement.dataset.theme === "dark" ? "dark" : "light");
+
+// Este modo oculta el mantenimiento solo para quien usa el enlace de revisión.
+// No protege archivos ni constituye una sesión autenticada.
+if (document.documentElement.dataset.review) {
+  const value = document.documentElement.dataset.review;
+  const banner = document.createElement("aside");
+  banner.className = "review-banner";
+  banner.setAttribute("aria-label", "Modo revisión");
+  const text = document.createElement("p");
+  text.textContent = "Modo revisión · El público sigue viendo mantenimiento. Este enlace no es un acceso privado.";
+  const exit = document.createElement("a");
+  exit.textContent = "Salir y ver mantenimiento";
+  exit.href = window.location.pathname + "?maintenance";
+  // También funciona con el almacenamiento bloqueado y en pestañas nuevas.
+  const keepReviewLinks = () => document.querySelectorAll("a[href]").forEach((link) => {
+    const target = new URL(link.getAttribute("href"), window.location.href);
+    if (target.origin === window.location.origin && /(?:\.html|\/)$/i.test(target.pathname) && !target.searchParams.has("maintenance")) {
+      target.searchParams.set("revision", value);
+      link.href = target.href;
+    }
+  });
+  keepReviewLinks();
+  document.addEventListener("DOMContentLoaded", keepReviewLinks, { once: true });
+  banner.append(text, exit);
+  document.body.prepend(banner);
+}

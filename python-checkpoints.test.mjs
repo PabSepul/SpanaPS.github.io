@@ -66,11 +66,11 @@ assert.equal(levels.length, 3, "Python debe tener 3 niveles");
 assert.deepEqual(levels.map((level) => level.projects), [4, 4, 4], "cada nivel debe tener 4 proyectos");
 assert.deepEqual(
   levels.map((level) => level.stage),
-  ["Conceptos básicos", "Conceptos avanzados", "Conceptos expertos"],
+  ["Conceptos básicos", "Aplicación de fundamentos", "Integración de fundamentos"],
   "cada nivel debe declarar su etapa"
 );
 for (const level of levels) {
-  assert.match(level.title, /^Finalizaste los conceptos .+ de Python\.$/, `nivel ${level.id} necesita mensaje de cierre`);
+  assert.match(level.title, /^Finalizaste (los conceptos básicos|la aplicación de fundamentos|la integración de fundamentos) de Python\.$/, `nivel ${level.id} necesita mensaje de cierre`);
 }
 
 assert.equal(exams.length, 3, "debe existir un examen por nivel");
@@ -106,7 +106,7 @@ assert.equal(gate.run("isLevelUnlocked(3)"), false, "el nivel 3 sigue bloqueado"
 assert.equal(gate.elements.get("#level-checkpoint").hidden, false, "el punto de control aparece al terminar el nivel");
 assert.equal(gate.elements.get("#checkpoint-title").textContent, "Finalizaste los conceptos básicos de Python.");
 assert.match(gate.elements.get("#checkpoint-kicker").textContent, /^Punto de control · Conceptos básicos$/);
-assert.match(gate.elements.get("#checkpoint-next").textContent, /conceptos avanzados/);
+assert.match(gate.elements.get("#checkpoint-next").textContent, /aplicación de fundamentos/);
 assert.equal(gate.elements.get("#checkpoint-next").hidden, false, "debe ofrecer continuar al nivel siguiente");
 
 /* 3. La navegación no cruza hacia un nivel bloqueado. */
@@ -146,7 +146,7 @@ assert.equal(exam.elements.get("#exam-submit").hidden, false, "reintentar vuelve
 exam.run("LEVEL_EXAMS[0].questions.forEach((question, index) => examAnswers.set(index, question.answer)); submitExam();");
 assert.equal(exam.run("approvedExams.has(1)"), true, "responder bien aprueba el examen");
 assert.match(exam.elements.get("#exam-result").textContent, /Aprobado con 5 de 5/);
-assert.match(exam.elements.get("#exam-result").textContent, /conceptos avanzados/, "debe invitar al nivel siguiente");
+assert.match(exam.elements.get("#exam-result").textContent, /aplicación de fundamentos/, "debe invitar al nivel siguiente");
 assert.equal(exam.storage.get("codigo-cero.python-v2.exams"), "[1]", "el examen aprobado queda guardado");
 
 /* 5. Una sola respuesta errónea todavía aprueba, dos no. */
@@ -177,4 +177,22 @@ assert.equal(finish.elements.get("#course-finish").hidden, true, "faltando un ex
 finish.run("approvedExams.add(3); renderProgress();");
 assert.equal(finish.elements.get("#course-finish").hidden, false, "con todo aprobado la ruta se cierra");
 
-console.log("Python: 3 puntos de control, 15 preguntas y 6 escenarios de desbloqueo: OK");
+/* Los modelos guiados no deben fingir que ejecutan cambios de lógica. */
+const models = createContext();
+for (let id = 5; id <= 12; id++) {
+  models.run(`assertGuidedPython(allProjects().find(p => p.id === ${id}), allProjects().find(p => p.id === ${id}).starter)`);
+  assert.throws(() => models.run(`assertGuidedPython(allProjects().find(p => p.id === ${id}), allProjects().find(p => p.id === ${id}).starter + '\\nprint("extra")')`), /simulador guiado/);
+}
+models.run('assertGuidedPython(allProjects()[4], allProjects()[4].starter.replace(/edad = \\d+/, "edad = 15"))');
+assert.throws(() => models.run('assertGuidedPython(allProjects()[4], allProjects()[4].starter.replace(">= 18", ">= 90"))'), /simulador guiado/);
+assert.throws(() => models.run('assertGuidedPython(allProjects()[7], allProjects()[7].starter.replace(/tareas = .*/, \'tareas = ["a" "b"]\'))'), /simulador guiado/);
+assert.equal(models.run('runAverageProject("notas = [4, 6,]").environment.promedio'), 5);
+assert.throws(() => models.run('runAverageProject("notas = []")'), /números/);
+assert.deepEqual(models.runJson('readStringList(\'tareas = ["hoy", "", "mañana"]\', "tareas")'), ['hoy', '', 'mañana']);
+models.run('activeProjectId = 1; projectCode.value = \'print("Hola")\'; runActiveProject();');
+assert.equal(models.run('validatedSources.get(1)'), 'print("Hola")');
+models.elements.get('#course-project-code').value = 'print(';
+for (const callback of models.elements.get('#course-project-code').listeners.input || []) callback();
+assert.equal(models.run('validatedSources.has(1)'), false);
+assert.equal(models.elements.get('#complete-course-project').disabled, true);
+console.log("Python: 3 puntos de control, 15 preguntas, desbloqueo, 8 modelos guiados y edición invalidada: OK");

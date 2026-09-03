@@ -1,5 +1,59 @@
 # Traspaso del proyecto Código Cero / intenta.cl
 
+## Actualización vigente: 3 de septiembre de 2026
+
+Esta sección reemplaza el estado operativo y los próximos pasos de las notas históricas que siguen.
+
+El usuario autorizó publicar **toda la actualización**, manteniendo la pantalla de mantenimiento para
+el público. No autorizó abrir el sitio de forma general. El destino sigue siendo GitHub Pages, `main`, raíz `/`,
+repositorio `PabSepul/SpanaPS.github.io`; no se migró el hosting ni se añadieron servicios.
+
+- Respaldo previo local: `38667bf`, con todo el desarrollo que estaba sin confirmar.
+- Portada: avance en las ocho tarjetas, grupos separados de rutas y mini cursos y «Continuar donde quedaste».
+- `learning-state.js`: conserva las claves anteriores; añade módulo activo, fecha y borradores por ruta.
+- `catalog.js`: muestra proyectos/módulos y exámenes por separado; una ruta extensa exige 12 + 3 exámenes.
+- `learning-guidance.js`: 24 ayudas (HTML/CSS y JavaScript) con resultado esperado y error frecuente.
+- `learning-review.css`: ajustes de lectura, controles y anchura de editores móviles en ambos temas.
+- Python: cambios de código invalidan la validación pendiente. Los proyectos 5–12 son modelos guiados;
+  cambiar su lógica o sangría muestra un error explícito. Solo se pueden modificar los datos indicados.
+- Los niveles se describen como básicos, aplicación e integración, sin prometer dominio «experto».
+- Navegación con teclado en pestañas y foco de los exámenes mejorados.
+
+### Revisar el sitio montado sin abrirlo al público
+
+Entrada: `https://intenta.cl/?revision=septiembre-2026`.
+Salida: `https://intenta.cl/?maintenance`, o el enlace «Salir y ver mantenimiento» del aviso de revisión.
+
+`review-preview.js` se carga inmediatamente después de la lógica de mantenimiento de cada HTML.
+El HTML comienza cerrado (`class="is-maintenance"`), por lo que sin JavaScript sigue mostrando mantenimiento.
+El enlace habilita la revisión en esa pestaña y conserva el estado en `sessionStorage`. Los enlaces internos
+incluyen el parámetro para funcionar incluso si el almacenamiento está bloqueado. `?maintenance` tiene prioridad.
+No hay credenciales: **es una vista previa por enlace, no autenticación ni privacidad**; fuente y contenido
+siguen siendo públicos. Ambos modos declaran `noindex, nofollow`.
+
+### Verificación y próximos pasos
+
+Ejecutar las seis suites antes de publicar nuevos cambios:
+
+```powershell
+node starter-course.test.mjs
+node python-checkpoints.test.mjs
+node sql-guide.test.mjs
+node mini-courses.test.mjs
+node learning-state.test.mjs
+node review-preview.test.mjs
+```
+
+Para comparar los modelos de datos con CPython, indicar un Python 3 disponible mediante `$env:PYTHON`.
+No hay instalación npm, compilación ni dependencias nuevas. `QA.md` registra el alcance de las comprobaciones.
+
+Próximo paso de producto: recorrer la vista publicada con usuarios principiantes, registrar dónde se traban
+y ajustar las explicaciones. Después decidir si se necesitan editores libres con runtimes reales y/o cuentas.
+No retirar mantenimiento ni presentar este enlace como un sistema privado. Para privacidad real, evaluar
+autenticación en un proveedor o servidor con autorización explícita del usuario.
+
+## Notas históricas del 2 de septiembre (no usar como estado operativo actual)
+
 Fecha del traspaso: 2 de septiembre de 2026  
 Repositorio: <https://github.com/PabSepul/SpanaPS.github.io>  
 Dominio público: <https://intenta.cl>  

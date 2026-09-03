@@ -116,7 +116,7 @@
               example: ".mensaje { color: #1c69d4; }",
               explanation: "Un selector como .mensaje encuentra el elemento que posee esa clase. Dentro de las llaves escribimos propiedades y valores separados por dos puntos.",
               concepts: ["class conecta una etiqueta con un selector.", "color cambia el texto.", "padding agrega espacio interior."],
-              goal: "Crea un párrafo con la clase “mensaje” y dale color azul junto con al menos 16px de espacio interior.",
+              goal: "Crea un párrafo con la clase “mensaje” y define un color de texto junto con al menos 16px de espacio interior.",
               hints: ["Agrega class=\"mensaje\" a la etiqueta p.", "Dentro de <style> escribe el selector .mensaje { ... }.", "Usa color: blue o un color hexadecimal y padding: 16px."],
               file: "estilos.html",
               starter: "<style>\n  .mensaje {\n    color: #262626;\n  }\n</style>\n\n<p class=\"mensaje\">Estoy aprendiendo CSS.</p>",
@@ -158,7 +158,7 @@
               example: ".caja { padding: 24px; margin: 16px; }",
               explanation: "padding separa el contenido del borde, margin separa la caja de sus vecinas y border-radius suaviza las esquinas.",
               concepts: ["padding es espacio interior.", "margin es espacio exterior.", "border-radius redondea las esquinas."],
-              goal: "Dale a .caja un padding de 24px, un margin de 16px, un borde visible y esquinas de al menos 8px.",
+              goal: "Dale a .caja al menos 24px de padding, 16px de margin, un borde visible y esquinas de al menos 8px.",
               hints: ["Escribe padding: 24px; dentro de .caja.", "Agrega margin: 16px; en la misma regla.", "Usa border: 2px solid #1c69d4; y border-radius: 8px;."],
               file: "caja.html",
               starter: "<style>\n  .caja {\n    background: #eef3fb;\n  }\n</style>\n\n<div class=\"caja\">\n  <h3>Una caja</h3>\n  <p>El espacio también comunica.</p>\n</div>",
@@ -255,7 +255,7 @@
               success: "Tu diseño ya responde al tamaño de la pantalla.",
               checks: [
                 { label: "Conserva la grilla de tres columnas", test: (code) => /\bgrid-template-columns\s*:\s*repeat\s*\(\s*3\s*,/is.test(code) },
-                { label: "Incluye una media query hasta 600px", test: (code) => /@media[^{]*\(\s*max-width\s*:\s*(?:[1-5]\d{2}|600)px\s*\)/i.test(code) },
+                { label: "Incluye una media query hasta 600px", test: (code) => /@media[^{]*\(\s*max-width\s*:\s*600px\s*\)/i.test(code) },
                 { label: "En móvil la grilla queda en una columna", test: (code) => /@media[\s\S]*\{[\s\S]*grid-template-columns\s*:\s*1fr\s*;/i.test(code) }
               ]
             },
@@ -273,7 +273,7 @@
               hints: ["Estructura: <article class=\"curso\"><h2>...</h2><p>...</p><button>...</button></article>.", "En .curso define border, border-radius y padding de al menos 20px.", "Agrega .curso:hover y una @media (max-width: 600px) que ajuste el padding o el ancho."],
               file: "tarjeta.html",
               starter: "<style>\n  .curso {\n    max-width: 320px;\n    background: #ffffff;\n  }\n</style>\n\n<article class=\"curso\">\n  <h2>Ruta de SQL</h2>\n  <p>Consulta datos reales en cinco horas.</p>\n  <button type=\"button\">Comenzar</button>\n</article>",
-              success: "Terminaste un componente completo, accesible y adaptable.",
+              success: "Terminaste un componente con estructura, estilos y adaptación. Comprueba también su lectura y navegación con teclado.",
               checks: [
                 { label: "La tarjeta usa article con título, texto y botón", test: (code) => /<article\b[^>]*class\s*=\s*["'][^"']*\bcurso\b/i.test(code) && /<h2\b/i.test(code) && /<p\b/i.test(code) && /<button\b/i.test(code) },
                 { label: ".curso tiene borde y al menos 20px de padding", test: (code) => /\.curso\s*\{[^}]*\bborder\s*:/is.test(code) && /\.curso\s*\{[^}]*\bpadding\s*:\s*(?:2\d|[3-9]\d|\d{3,})px\b/is.test(code) },
@@ -504,7 +504,7 @@
               intro: "Una función flecha expresa la misma idea con menos ceremonia y admite valores por defecto.",
               example: "const doble = (n) => n * 2;",
               explanation: "Cuando el cuerpo es una sola expresión, el resultado se devuelve automáticamente. Un parámetro con valor por defecto se usa si no envías ese dato.",
-              concepts: ["=> reemplaza la palabra function.", "Un cuerpo de una línea retorna solo.", "Un parámetro puede traer un valor por defecto."],
+              concepts: ["Una función flecha se escribe con =>.", "Una expresión sin llaves se retorna; con llaves necesitas return.", "Un parámetro puede traer un valor por defecto."],
               goal: "Convierte descuento en función flecha con 10 % por defecto y muestra descuento(1000) y descuento(1000, 50).",
               hints: ["Escribe const descuento = (precio, porcentaje = 10) => ...;.", "El cuerpo es precio - (precio * porcentaje) / 100.", "Los resultados esperados son 900 y 500."],
               file: "descuento.js",
@@ -533,7 +533,7 @@
               success: "Ya describes transformaciones completas en pocas líneas.",
               checks: [
                 { label: "Selecciona los cursos con filter", test: (code) => /\.filter\s*\(/.test(code) },
-                { label: "Transforma o resume con map o reduce", test: (code) => /\.map\s*\(/.test(code) && /\.reduce\s*\(/.test(code) },
+                { label: "Transforma con map y resume con reduce", test: (code) => /\.map\s*\(/.test(code) && /\.reduce\s*\(/.test(code) },
                 { label: "Muestra “Python, APIs” y el total 26", test: (code, result) => result.output.includes("Python, APIs") && result.output.includes("26") }
               ]
             },
@@ -570,7 +570,7 @@
   if (!course) return;
 
   const exams = globalThis.StarterExams.LEVEL_EXAMS[courseId];
-  const stages = course.stages || ["Conceptos básicos", "Conceptos avanzados", "Conceptos expertos"];
+  const stages = course.stages || ["Conceptos básicos", "Aplicación de fundamentos", "Integración de fundamentos"];
 
   const modules = [];
   const levelStart = [];
@@ -645,6 +645,9 @@
   let examAnswers = new Map();
   let examReviewed = false;
   let validatedCode = null;
+  const learning = globalThis.LearningState;
+  const drafts = new Map(Object.entries(learning?.session(courseId).drafts || {}).map(([index, code]) => [Number(index), code]));
+  let hasActiveModule = false;
 
   function loadCompleted() {
     try {
@@ -716,6 +719,9 @@
       button.className = "level-tab";
       button.setAttribute("role", "tab");
       button.setAttribute("aria-selected", String(index === activeLevel));
+      button.id = "starter-level-" + index;
+      button.tabIndex = index === activeLevel ? 0 : -1;
+      button.setAttribute("aria-controls", "starter-workspace");
       button.disabled = !isLevelUnlocked(index);
       button.innerHTML = `<span>0${index + 1}</span><strong>${level.title}</strong><small>${levelStatusLabel(index)}</small>`;
       button.addEventListener("click", () => selectLevel(index));
@@ -732,6 +738,9 @@
       button.type = "button";
       button.role = "tab";
       button.setAttribute("aria-selected", String(globalIndex === activeIndex));
+      button.id = "starter-module-" + globalIndex;
+      button.tabIndex = globalIndex === activeIndex ? 0 : -1;
+      button.setAttribute("aria-controls", "starter-workspace");
       button.innerHTML = `<span>${String(globalIndex + 1).padStart(2, "0")}</span><strong>${module.shortTitle}</strong><small>${completed.has(globalIndex) ? "Completado" : module.duration}</small>`;
       button.addEventListener("click", () => selectModule(globalIndex));
       return button;
@@ -885,6 +894,10 @@
 
   function selectModule(index) {
     if (!Number.isInteger(index) || !modules[index] || !isLevelUnlocked(modules[index].levelIndex)) return;
+    if (hasActiveModule) {
+      drafts.set(activeIndex, elements.code.value);
+      learning?.save(courseId, activeIndex, elements.code.value);
+    }
     closeExam();
     validatedCode = null;
     activeIndex = index;
@@ -905,7 +918,9 @@
     elements.labTitle.textContent = module.title;
     if (elements.difficulty) elements.difficulty.textContent = `${module.difficulty} · ${module.duration}`;
     elements.file.textContent = module.file;
-    elements.code.value = module.starter;
+    elements.code.value = drafts.get(index) ?? module.starter;
+    hasActiveModule = true;
+    learning?.save(courseId, index, elements.code.value);
     elements.hints.replaceChildren();
     elements.hintButton.disabled = false;
     elements.hintButton.textContent = "Ver pista 1";
@@ -915,13 +930,14 @@
     elements.complete.classList.toggle("is-complete", completed.has(index));
     elements.complete.textContent = completed.has(index) ? "Módulo completado" : "Completar módulo";
     elements.previous.disabled = index === 0;
-    elements.next.disabled = index === modules.length - 1;
+    elements.next.disabled = index === modules.length - 1 || !isLevelUnlocked(modules[index + 1]?.levelIndex);
     renderLevels();
     renderList();
     renderProgress();
     renderCheckpoint();
     renderValidations();
     if (course.kind === "sql") globalThis.SQLGuide?.renderLesson(index);
+    globalThis.LearningGuidance?.render(courseId, index);
     runModule(false);
   }
 
@@ -966,11 +982,19 @@
   }
 
   elements.run.addEventListener("click", () => runModule(true));
-  elements.reset.addEventListener("click", () => selectModule(activeIndex));
+  elements.reset.addEventListener("click", () => {
+    drafts.delete(activeIndex);
+    learning?.removeDraft(courseId, activeIndex);
+    hasActiveModule = false;
+    selectModule(activeIndex);
+    elements.code.focus?.();
+  });
   elements.code.addEventListener("input", () => {
     validatedCode = null;
     elements.complete.disabled = true;
     elements.success.hidden = true;
+    drafts.set(activeIndex, elements.code.value);
+    learning?.save(courseId, activeIndex, elements.code.value);
     renderValidations();
   });
   elements.hintButton.addEventListener("click", () => {
@@ -993,6 +1017,7 @@
     renderList();
     renderProgress();
     renderCheckpoint();
+    elements.next.disabled = activeIndex === modules.length - 1 || !isLevelUnlocked(modules[activeIndex + 1]?.levelIndex);
   });
   elements.previous.addEventListener("click", () => selectModule(activeIndex - 1));
   elements.next.addEventListener("click", () => selectModule(activeIndex + 1));
@@ -1002,5 +1027,22 @@
   elements.examRetry.addEventListener("click", retryExam);
   elements.examClose.addEventListener("click", () => closeExam(true));
 
-  selectModule(0);
+  // Mantiene las pestañas utilizables sin ratón y devuelve el foco al control
+  // reconstruido después de cambiar el nivel o el módulo.
+  [elements.levelTabs, elements.list].forEach((root) => {
+    root?.addEventListener("keydown", (event) => {
+      if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) return;
+      const buttons = [...root.querySelectorAll("button:not(:disabled)")];
+      const index = buttons.indexOf(event.target);
+      if (index < 0 || !buttons.length) return;
+      event.preventDefault();
+      const next = event.key === "Home" ? 0 : event.key === "End" ? buttons.length - 1
+        : (index + (event.key === "ArrowRight" ? 1 : -1) + buttons.length) % buttons.length;
+      buttons[next].click();
+      root.querySelectorAll("button:not(:disabled)")[next]?.focus();
+    });
+  });
+
+  const resumeIndex = learning?.resumeIndex(courseId) ?? 0;
+  selectModule(isLevelUnlocked(modules[resumeIndex]?.levelIndex) ? resumeIndex : 0);
 })();

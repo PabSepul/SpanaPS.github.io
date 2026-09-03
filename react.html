@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="es-CL">
+<html lang="es-CL" class="is-maintenance">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -14,18 +14,22 @@
         document.documentElement.classList.add("is-maintenance");
         document.title = "Código Cero — Estamos preparando algo nuevo";
         const robots = document.createElement("meta"); robots.name = "robots"; robots.content = "noindex, nofollow"; document.head.append(robots);
+      } else {
+        document.documentElement.classList.remove("is-maintenance");
       }
       const preferred = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
       try { const saved = localStorage.getItem("codigo-cero.theme"); document.documentElement.dataset.theme = saved === "dark" || saved === "light" ? saved : preferred; }
       catch { document.documentElement.dataset.theme = preferred; }
     })();
   </script>
+  <script src="review-preview.js?v=20260903-review1"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&display=swap" rel="stylesheet">
   <link rel="icon" href="favicon.svg?v=20260902-bmw1" type="image/svg+xml">
   <link rel="stylesheet" href="styles.css?v=20260902-checkpoints2">
   <link rel="stylesheet" href="mini-course.css?v=20260902-mini1">
+  <link rel="stylesheet" href="learning-review.css?v=20260903-review1">
 </head>
 <body class="course-page starter-page mini-page" data-mini-course="react">
   <section class="maintenance-screen" aria-labelledby="maintenance-title"><div class="maintenance-shell"><div class="maintenance-brand"><span aria-hidden="true">&gt;_</span> Código Cero</div><p class="maintenance-kicker">Actualización en curso</p><h1 id="maintenance-title">Estamos preparando la siguiente etapa.</h1><p>Nuevas rutas y ejercicios están en construcción.</p><div class="maintenance-progress" aria-hidden="true"><span></span></div><small>Volvemos pronto.</small></div></section>
@@ -97,10 +101,10 @@
     </div>
   </main>
   <footer><div class="footer-inner"><a class="brand footer-brand" href="index.html"><span class="brand-mark" aria-hidden="true">&gt;_</span><span>Código Cero</span></a><p>Programación clara para dar el primer paso.</p><p class="footer-meta">Hecho para aprender · <span data-current-year></span></p></div></footer>
-  <script src="site.js?v=20260902-depth1"></script>
+  <script src="learning-state.js?v=20260903-review1"></script>
+  <script src="site.js?v=20260903-review1"></script>
   <script src="mini-courses.js?v=20260902-mini1"></script>
   <script src="react-course.js?v=20260902-mini1"></script>
-  <script src="mini-course.js?v=20260902-mini1"></script>
+  <script src="mini-course.js?v=20260903-review1"></script>
 </body>
 </html>
-

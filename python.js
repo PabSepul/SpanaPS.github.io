@@ -7,7 +7,7 @@ const COURSE_LEVELS = [
     description: "Mensajes, variables y operaciones",
     stage: "Conceptos básicos",
     completionTitle: "Finalizaste los conceptos básicos de Python.",
-    completionCopy: "Completaste los cuatro proyectos del nivel. Rinde el mini examen para certificar lo aprendido; los conceptos avanzados ya quedaron disponibles.",
+    completionCopy: "Completaste los cuatro proyectos del nivel. Rinde el mini examen para comprobar lo aprendido; la aplicación de fundamentos ya está disponible.",
     approvedCopy: "Aprobaste el mini examen de conceptos básicos. Puedes repetirlo cuando quieras para repasar.",
     projects: [
       {
@@ -136,10 +136,10 @@ const COURSE_LEVELS = [
     id: 2,
     title: "Decisiones y ciclos",
     description: "Condiciones, repeticiones y listas",
-    stage: "Conceptos avanzados",
-    completionTitle: "Finalizaste los conceptos avanzados de Python.",
-    completionCopy: "Ya controlas decisiones, ciclos y listas. Rinde el mini examen del nivel; los conceptos expertos ya quedaron disponibles.",
-    approvedCopy: "Aprobaste el mini examen de conceptos avanzados. Puedes repetirlo cuando quieras para repasar.",
+    stage: "Aplicación de fundamentos",
+    completionTitle: "Finalizaste la aplicación de fundamentos de Python.",
+    completionCopy: "Practicaste decisiones, ciclos y listas. Rinde el mini examen del nivel; la integración de fundamentos ya está disponible.",
+    approvedCopy: "Aprobaste el mini examen de aplicación de fundamentos. Puedes repetirlo cuando quieras para repasar.",
     projects: [
       {
         id: 5,
@@ -266,10 +266,10 @@ const COURSE_LEVELS = [
     id: 3,
     title: "Funciones y proyecto final",
     description: "Código reutilizable y un desafío completo",
-    stage: "Conceptos expertos",
-    completionTitle: "Finalizaste los conceptos expertos de Python.",
-    completionCopy: "Terminaste los doce proyectos. Aprueba este último mini examen para cerrar la ruta completa.",
-    approvedCopy: "Aprobaste los tres mini exámenes de la ruta. Completaste Python de principio a fin.",
+    stage: "Integración de fundamentos",
+    completionTitle: "Finalizaste la integración de fundamentos de Python.",
+    completionCopy: "Terminaste los doce proyectos. Aprueba los tres mini exámenes para cerrar la ruta completa.",
+    approvedCopy: "Aprobaste el mini examen de integración. Revisa que también estén aprobados los otros dos para cerrar esta introducción a Python.",
     projects: [
       {
         id: 9,
@@ -282,7 +282,7 @@ const COURSE_LEVELS = [
         example: "def saludar(nombre):",
         explanation: "def crea la función, el parámetro recibe un dato y return entrega el resultado a quien llamó la función.",
         concepts: ["Definir con def", "Recibir parámetros", "Devolver con return"],
-        goal: "Crea saludar(nombre) y úsala para generar un saludo personalizado.",
+        goal: "Explora saludar(nombre): cambia Ada por otro nombre en la llamada y predice el saludo. Conserva la función del ejemplo.",
         starter: 'def saludar(nombre):\n    return f"Hola, {nombre}"\n\nprint(saludar("Ada"))',
         hints: [
           "La definición debe comenzar con def saludar(nombre):",
@@ -311,7 +311,7 @@ const COURSE_LEVELS = [
         example: "precio_final(25000, 15)",
         explanation: "Una función puede recibir varios parámetros, realizar operaciones internas y devolver un único resultado.",
         concepts: ["Usar dos parámetros", "Calcular dentro de una función", "Reutilizar una fórmula"],
-        goal: "Completa precio_final(precio, descuento) y muestra el resultado de una compra.",
+        goal: "Prueba precio_final con otro precio y porcentaje en la llamada. Comprueba la rebaja calculada conservando la función del ejemplo.",
         starter: 'def precio_final(precio, descuento):\n    rebaja = precio * descuento\n    rebaja = rebaja / 100\n    return precio - rebaja\n\nprint(precio_final(25000, 15))',
         hints: [
           "Multiplica precio por descuento para comenzar la rebaja.",
@@ -447,7 +447,7 @@ const LEVEL_EXAMS = [
   },
   {
     levelId: 2,
-    title: "Mini examen de conceptos avanzados",
+    title: "Mini examen de aplicación de fundamentos",
     intro: "Cinco preguntas sobre condiciones, ciclos y listas. Necesitas 4 respuestas correctas para aprobar.",
     passing: 4,
     questions: [
@@ -495,7 +495,7 @@ const LEVEL_EXAMS = [
   },
   {
     levelId: 3,
-    title: "Mini examen de conceptos expertos",
+    title: "Mini examen de integración de fundamentos",
     intro: "Cinco preguntas sobre funciones, parámetros y resultados. Necesitas 4 respuestas correctas para aprobar.",
     passing: 4,
     questions: [
@@ -595,7 +595,8 @@ let activeProjectId = 1;
 let completedProjects = loadProgress();
 const validRuns = new Map();
 const revealedHints = new Map();
-const drafts = new Map();
+const drafts = new Map(Object.entries(globalThis.LearningState?.session("python").drafts || {}).map(([index, code]) => [Number(index) + 1, code]));
+const validatedSources = new Map();
 let approvedExams = loadApprovedExams();
 let examLevelId = 1;
 let examAnswers = new Map();
@@ -695,10 +696,10 @@ function readStringList(source, name) {
   const match = source.match(pattern);
   if (!match) throw new Error("Crea la lista “" + name + "” utilizando corchetes.");
   const values = [];
-  const valuePattern = /["']([^"']+)["']/g;
+  const valuePattern = /(["'])(.*?)\1/g;
   let valueMatch = valuePattern.exec(match[1]);
   while (valueMatch) {
-    values.push(valueMatch[1]);
+    values.push(valueMatch[2]);
     valueMatch = valuePattern.exec(match[1]);
   }
   if (values.length === 0) throw new Error("Agrega textos entre comillas dentro de “" + name + "”.");
@@ -709,7 +710,8 @@ function readNumberList(source, name) {
   const pattern = new RegExp("^\\s*" + name + "\\s*=\\s*\\[([^\\]]*)\\]\\s*$", "m");
   const match = source.match(pattern);
   if (!match) throw new Error("Crea la lista “" + name + "” utilizando corchetes.");
-  const values = match[1].split(",").map((value) => Number(value.trim()));
+  const entries = match[1].trim().replace(/,\s*$/, "");
+  const values = entries ? entries.split(",").map((value) => Number(value.trim())) : [];
   if (values.length === 0 || values.some((value) => !Number.isFinite(value))) {
     throw new Error("La lista “" + name + "” debe contener únicamente números separados por comas.");
   }
@@ -719,6 +721,30 @@ function readNumberList(source, name) {
 function runAgeDecision(source) {
   const edad = readNumberVariable(source, "edad");
   return { environment: { edad }, output: [edad >= 18 ? "Mayor de edad" : "Menor de edad"] };
+}
+
+// Los proyectos 5–12 son modelos didácticos, no un intérprete Python general.
+// Solo aceptamos la estructura que el modelo realmente representa. Cambiar
+// operaciones, mensajes o sangría nunca puede devolver una salida inventada.
+function assertGuidedPython(project, source) {
+  const normalize = (text) => text.split(/\r?\n/)
+    .filter((line) => line.trim() && !line.trim().startsWith("#"))
+    .map((line) => line.trimEnd())
+    .map((line) => {
+      if ([5, 6, 12].includes(project.id)) {
+        line = line.replace(/^(edad|temperatura|horas) = -?\d+(?:\.\d+)?$/, "$1 = <numero>");
+        if (project.id === 12) line = line.replace(/^tema = (["'])[^"'\\]*\1$/, "tema = <texto>");
+      }
+      if (project.id === 7) line = line.replace(/^for numero in range\(-?\d+, ?-?\d+\):$/, "for numero in range(<inicio>, <fin>):");
+      if (project.id === 8) line = line.replace(/^tareas = \[\s*(?:(?:"[^"\\]*"|'[^'\\]*')(?:\s*,\s*(?:"[^"\\]*"|'[^'\\]*'))*\s*,?)?\s*\]$/, "tareas = <lista>");
+      if (project.id === 9) line = line.replace(/^print\(saludar\((["'])[^"'\\]+\1\)\)$/, "print(saludar(<nombre>))");
+      if (project.id === 10) line = line.replace(/^print\(precio_final\(-?\d+(?:\.\d+)?, ?-?\d+(?:\.\d+)?\)\)$/, "print(precio_final(<precio>, <descuento>))");
+      if (project.id === 11) line = line.replace(/^notas = \[\s*(?:-?\d+(?:\.\d+)?(?:\s*,\s*-?\d+(?:\.\d+)?)*\s*,?)?\s*\]$/, "notas = <lista>");
+      return line;
+    }).join("\n");
+  if (normalize(source) !== normalize(project.starter)) {
+    throw new Error("Este proyecto es un simulador guiado: conserva las instrucciones y la sangría del ejemplo y cambia solo los datos indicados. No ejecuta otras variantes de Python. Usa «Restablecer» para recuperar el modelo.");
+  }
 }
 
 function runTemperatureClassifier(source) {
@@ -892,11 +918,14 @@ function renderExam() {
 
     const statement = document.createElement("p");
     statement.className = "exam-statement";
+    statement.id = "python-exam-question-" + index;
     statement.textContent = question.question;
     item.append(statement);
 
     const options = document.createElement("div");
     options.className = "exam-options";
+    options.setAttribute("role", "group");
+    options.setAttribute("aria-labelledby", statement.id);
     question.options.forEach((option, optionIndex) => {
       const button = document.createElement("button");
       button.type = "button";
@@ -940,14 +969,17 @@ function openExam(levelId) {
   examResult.className = "exam-result";
   examPanel.hidden = false;
   renderExam();
+  examTitle.focus?.({ preventScroll: true });
   if (typeof examPanel.scrollIntoView === "function") examPanel.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
-function closeExam() {
+function closeExam(returnFocus = false) {
   if (examPanel) examPanel.hidden = true;
+  if (returnFocus) checkpointExam?.focus?.();
 }
 
 function submitExam() {
+  if (examPanel.hidden || examReviewed || !isExamUnlocked(examLevelId)) return;
   const exam = getExam(examLevelId);
   if (!exam) return;
   if (examAnswers.size < exam.questions.length) {
@@ -963,7 +995,8 @@ function submitExam() {
     approvedExams.add(examLevelId);
     saveApprovedExams();
     examResult.textContent = "Aprobado con " + result.correct + " de " + result.total + " respuestas correctas. "
-      + (next ? "Ya puedes continuar con " + next.stage.toLowerCase() + "." : "Con esto cierras la ruta de Python.");
+      + (next ? "Ya puedes continuar con " + next.stage.toLowerCase() + "."
+        : approvedExams.size === 3 ? "Con esto cierras la ruta de Python." : "Revisa los otros mini exámenes: necesitas aprobar los tres para cerrar la ruta.");
     examResult.className = "exam-result is-passed";
   } else {
     examResult.textContent = "Obtuviste " + result.correct + " de " + result.total + " y necesitas " + result.passing
@@ -973,6 +1006,7 @@ function submitExam() {
   renderLevelTabs();
   renderProgress();
   renderCheckpoint();
+  examResult.focus?.();
 }
 
 function retryExam() {
@@ -981,6 +1015,7 @@ function retryExam() {
   examResult.textContent = "";
   examResult.className = "exam-result";
   renderExam();
+  examTitle.focus?.();
 }
 
 function getActiveLevel() {
@@ -992,7 +1027,10 @@ function getActiveProject() {
 }
 
 function saveCurrentDraft() {
-  if (projectCode && getActiveProject()) drafts.set(activeProjectId, projectCode.value);
+  if (projectCode && getActiveProject()) {
+    drafts.set(activeProjectId, projectCode.value);
+    globalThis.LearningState?.save("python", activeProjectId - 1, projectCode.value);
+  }
 }
 
 function loadProgress() {
@@ -1099,6 +1137,10 @@ function renderProject() {
   document.querySelector("#course-project-difficulty").textContent = project.difficulty;
   document.querySelector("#course-project-file").textContent = project.file;
   document.querySelector("#course-project-success-copy").textContent = project.success;
+  const scopeNote = document.querySelector("#python-lab-scope");
+  if (scopeNote) scopeNote.textContent = project.execute
+    ? "Simulador guiado: conserva las instrucciones del ejemplo. Puedes cambiar los datos de entrada de la misión (valores, listas o límites de range), no la lógica. Para escribir otras soluciones utiliza Python 3 en tu equipo."
+    : "Editor educativo: interpreta las asignaciones, print, f-strings y operaciones simples de estos primeros cuatro proyectos. No ejecuta Python completo. Cambia el ejemplo y comprueba la salida.";
   document.querySelector("#course-project").setAttribute("aria-labelledby", "level-tab-" + level.id + " course-project-title");
 
   projectCode.value = drafts.has(project.id) ? drafts.get(project.id) : project.starter;
@@ -1123,6 +1165,7 @@ function renderProject() {
   positionText.textContent = "Proyecto " + project.id + " de 12";
   renderProjectList();
   renderCheckpoint();
+  globalThis.LearningState?.save("python", project.id - 1, projectCode.value);
 }
 
 function activateLevel(levelId, scroll = false) {
@@ -1152,7 +1195,7 @@ function activateProject(projectId, scroll = false) {
 function runHeroExample() {
   try {
     const result = runPython(heroCode.value);
-    heroOutput.innerHTML = '<span aria-hidden="true">›</span> ' + result.output.join("\n");
+    heroOutput.textContent = "› " + result.output.join("\n");
     heroOutput.classList.remove("is-error");
   } catch (error) {
     heroOutput.textContent = error.message;
@@ -1163,13 +1206,18 @@ function runHeroExample() {
 function runActiveProject() {
   const project = getActiveProject();
   drafts.set(project.id, projectCode.value);
+  globalThis.LearningState?.save("python", project.id - 1, projectCode.value);
   try {
-    const result = project.execute ? project.execute(projectCode.value) : runPython(projectCode.value);
+    if (project.execute) assertGuidedPython(project, projectCode.value);
+    const source = projectCode.value.split(/\r?\n/).filter((line) => !line.trim().startsWith("#")).join("\n");
+    const result = project.execute ? project.execute(source) : runPython(source);
     projectOutput.textContent = result.output.join("\n");
     projectOutput.classList.remove("is-error");
     const validationResults = project.validate(result, projectCode.value);
     const isValid = validationResults.every(Boolean);
     validRuns.set(project.id, isValid);
+    if (isValid) validatedSources.set(project.id, projectCode.value);
+    else validatedSources.delete(project.id);
     renderValidations(validationResults);
     successPanel.hidden = !isValid;
     if (!completedProjects.has(project.id)) completeButton.disabled = !isValid;
@@ -1178,6 +1226,7 @@ function runActiveProject() {
     }
   } catch (error) {
     validRuns.set(project.id, false);
+    validatedSources.delete(project.id);
     projectOutput.textContent = error.message;
     projectOutput.classList.add("is-error");
     successPanel.hidden = true;
@@ -1189,6 +1238,8 @@ function runActiveProject() {
 function resetActiveProject() {
   const project = getActiveProject();
   drafts.delete(project.id);
+  globalThis.LearningState?.removeDraft("python", project.id - 1);
+  validatedSources.delete(project.id);
   validRuns.set(project.id, false);
   renderProject();
   projectCode.focus();
@@ -1229,6 +1280,12 @@ heroCode.addEventListener("keydown", (event) => {
 document.querySelector("#run-course-project").addEventListener("click", runActiveProject);
 document.querySelector("#reset-course-project").addEventListener("click", resetActiveProject);
 projectCode.addEventListener("input", () => {
+  validRuns.set(activeProjectId, false);
+  validatedSources.delete(activeProjectId);
+  completeButton.disabled = true;
+  successPanel.hidden = true;
+  renderValidations();
+  saveCurrentDraft();
   document.querySelector("#course-code-lines").innerHTML = Array.from(
     { length: Math.max(7, projectCode.value.split(/\r?\n/).length) },
     (_, index) => index + 1,
@@ -1247,7 +1304,7 @@ hintButton.addEventListener("click", () => {
 
 completeButton.addEventListener("click", () => {
   const project = getActiveProject();
-  if (!validRuns.get(project.id)) return;
+  if (completeButton.disabled || !validRuns.get(project.id) || validatedSources.get(project.id) !== projectCode.value) return;
   completedProjects.add(project.id);
   saveProgress();
   renderProgress();
@@ -1285,14 +1342,24 @@ if (examQuestions) {
     const button = event.target.closest("[data-option]");
     if (!button || examReviewed) return;
     examAnswers.set(Number(button.dataset.question), Number(button.dataset.option));
-    renderExam();
+    examQuestions.querySelectorAll('[data-question="' + button.dataset.question + '"]').forEach((option) => {
+      const selected = option.dataset.option === button.dataset.option;
+      option.classList.toggle("is-selected", selected);
+      option.setAttribute("aria-pressed", String(selected));
+    });
   });
 }
 
 if (examSubmit) examSubmit.addEventListener("click", submitExam);
 if (examRetry) examRetry.addEventListener("click", retryExam);
-if (examClose) examClose.addEventListener("click", closeExam);
+if (examClose) examClose.addEventListener("click", () => closeExam(true));
 
+const resumePythonId = (globalThis.LearningState?.resumeIndex("python") ?? 0) + 1;
+const resumePythonLevel = levelOfProject(resumePythonId);
+if (resumePythonLevel && isLevelUnlocked(resumePythonLevel.id)) {
+  activeProjectId = resumePythonId;
+  activeLevelId = resumePythonLevel.id;
+}
 renderLevelTabs();
 renderProgress();
 renderProject();

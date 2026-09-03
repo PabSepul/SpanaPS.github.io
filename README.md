@@ -12,7 +12,7 @@ Cada proyecto incluye explicación, misión, tres pistas progresivas, ejecución
 
 Las cuatro rutas extensas (Python, HTML/CSS, JavaScript y SQL) funcionan con puntos de control: solo el primer nivel está abierto al comenzar y el siguiente se
 desbloquea al terminar los cuatro proyectos o módulos del anterior. Al cerrar un nivel aparece el mensaje de cierre de esa etapa
-(conceptos básicos, avanzados o expertos) y se habilita un mini examen de cinco preguntas de selección múltiple, con
+(conceptos básicos, aplicación e integración de fundamentos) y se habilita un mini examen de cinco preguntas de selección múltiple, con
 cuatro alternativas, explicación por pregunta y umbral de cuatro aciertos. Los exámenes se pueden repetir y la ruta se
 da por completada cuando están los doce proyectos o módulos y los tres exámenes aprobados. El examen no impide
 continuar al siguiente nivel, pero los tres deben aprobarse para cerrar la ruta. Reprobar un repaso no elimina una
@@ -84,4 +84,35 @@ La portada mantiene como próximas las rutas de Git y GitHub, Terminal, APIs e I
 
 Las tecnologías futuras deberán seguir el mismo patrón y vivir en su propia página, sin agregar sus ejercicios directamente a la portada.
 
-El dominio público configurado en `CNAME` muestra temporalmente una pantalla de mantenimiento. En `localhost` se abre directamente la versión ampliada para continuar su desarrollo y revisión antes de publicarla.
+## Continuidad y revisión de septiembre de 2026
+
+La portada separa rutas de fundamentos, mini cursos guiados y tecnologías próximas. Las ocho tarjetas muestran
+el progreso guardado y permiten continuar. El panel «Continuar donde quedaste» abre la última ruta en curso.
+`learning-state.js` lee las claves existentes sin migrarlas ni borrarlas; las rutas extensas también guardan
+el módulo activo y sus borradores en `codigo-cero.<ruta>.session-v1`. No hay cuentas ni sincronización entre equipos.
+`catalog.js` representa el avance y los exámenes por separado: doce ejercicios no significan ruta terminada
+si faltan los tres mini exámenes. Los mini cursos mantienen sus propias elecciones y no tienen exámenes.
+
+HTML/CSS y JavaScript incorporan resultados esperados, errores frecuentes y una pauta de práctica en
+`learning-guidance.js`. `learning-review.css` mejora la lectura y el espacio de los editores móviles en ambos temas.
+Python 1–4 usa un intérprete limitado; Python 5–12 usa modelos guiados. En estos últimos solo se aceptan cambios
+en los datos indicados, conservando la estructura del ejemplo. Otras modificaciones muestran un aviso, no un
+resultado simulado engañoso. Cambiar el código invalida una comprobación pendiente antes de poder completar.
+
+Pruebas adicionales: `node learning-state.test.mjs` y `node review-preview.test.mjs`.
+
+## Mantenimiento y vista previa publicada
+
+El público en `intenta.cl` y `www.intenta.cl` sigue viendo mantenimiento, también al entrar directamente
+en cualquiera de las ocho rutas. El HTML comienza con `is-maintenance`: sin JavaScript conserva esa pantalla.
+En `localhost` se abre la experiencia de desarrollo. No se debe retirar el mantenimiento sin autorización.
+
+- Vista previa: `https://intenta.cl/?revision=septiembre-2026`.
+- Volver a mantenimiento y cerrar la revisión de la pestaña: `https://intenta.cl/?maintenance`.
+- `review-preview.js` habilita la revisión por enlace y la conserva en `sessionStorage`.
+- `site.js` muestra el aviso y la salida; los enlaces internos conservan el parámetro, incluso con guardado bloqueado.
+- Tanto mantenimiento como revisión indican `noindex, nofollow`.
+
+**No es autenticación ni una zona privada.** Cualquier persona con el enlace puede entrar; los archivos y el
+repositorio siguen siendo públicos. Este mecanismo sirve para una presentación temporal de mantenimiento,
+no para proteger información confidencial. Un acceso realmente privado requiere control en el servidor o proveedor.

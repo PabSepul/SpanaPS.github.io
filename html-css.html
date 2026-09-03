@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="es-CL">
+<html lang="es-CL" class="is-maintenance">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -18,6 +18,8 @@
         robots.name = "robots";
         robots.content = "noindex, nofollow";
         document.head.append(robots);
+      } else {
+        document.documentElement.classList.remove("is-maintenance");
       }
       const preferred = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
       try {
@@ -28,11 +30,13 @@
       }
     })();
   </script>
+  <script src="review-preview.js?v=20260903-review1"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&display=swap" rel="stylesheet">
   <link rel="icon" href="favicon.svg?v=20260902-bmw1" type="image/svg+xml">
   <link rel="stylesheet" href="styles.css?v=20260902-checkpoints2">
+  <link rel="stylesheet" href="learning-review.css?v=20260903-review1">
 </head>
 <body class="course-page starter-page" data-course="html-css">
   <section class="maintenance-screen" aria-labelledby="maintenance-title">
@@ -67,13 +71,14 @@
         <p class="eyebrow"><span></span> Ruta inicial · HTML y CSS</p>
         <h1 id="course-title">Construye tu primera interfaz web.</h1>
         <p>Aprende a estructurar contenido, darle estilo y componer una interfaz que se adapta, con vista previa en cada paso.</p>
-        <div class="hero-actions"><a class="button button-primary" href="#laboratorio">Comenzar el módulo 1 <span aria-hidden="true">→</span></a><span class="route-duration">3 niveles · 12 módulos</span></div>
+        <div class="hero-actions"><a class="button button-primary" href="#laboratorio">Ir al laboratorio <span aria-hidden="true">→</span></a><span class="route-duration">3 niveles · 12 módulos</span></div>
       </div>
       <div class="starter-summary" aria-label="Resumen de la ruta"><span>&lt;/&gt;</span><strong>HTML + CSS</strong><p>Estructura, estilos, composición y un componente final.</p></div>
     </section>
 
     <section class="starter-modules" id="modulos" aria-labelledby="modules-title">
       <div class="starter-section-heading"><p class="eyebrow"><span></span> Tu recorrido</p><h2 id="modules-title">Tres niveles. Doce módulos encadenados.</h2></div>
+      <aside class="lesson-primer"><h3>Cómo practicar HTML y CSS</h3><p>Empieza aquí si todavía no conoces etiquetas. HTML describe el contenido; CSS cambia su presentación. En cada módulo, localiza la etiqueta o el selector del ejemplo antes de editar.</p><ol><li>Lee la misión y conserva la estructura que ya te damos.</li><li>Cambia una cosa y pulsa Ver resultado para ver su efecto en el panel aislado.</li><li>Compara lo que ves con las tres comprobaciones. Las comprobaciones buscan patrones básicos: no sustituyen revisar visualmente tu página.</li></ol><p>La vista previa no ejecuta scripts. Es blanca para representar tu página independientemente del tema del sitio. Al estudiar hover, recuerda que móviles y teclado necesitan una alternativa como :focus-visible.</p></aside>
       <div class="level-tabs" id="starter-level-tabs" role="tablist" aria-label="Niveles de la ruta"></div><div class="starter-module-list" id="starter-module-list" role="tablist" aria-label="Módulos de HTML y CSS"></div>
     </section>
 
@@ -81,13 +86,13 @@
       <div class="starter-progress"><span id="starter-position">Módulo 1 de 12</span><div class="progress-track" aria-hidden="true"><span id="starter-progress-fill"></span></div><strong id="starter-completed">0 completados</strong></div>
       <p class="starter-learning-note">Completa los cuatro módulos de cada nivel para abrir el siguiente y habilitar su mini examen. Cada examen tiene cinco preguntas y se aprueba con cuatro aciertos; completa los doce módulos y aprueba los tres exámenes para cerrar la ruta.</p>
       <p class="starter-exam-progress" id="starter-exam-progress" role="status">Mini exámenes: 0 de 3 aprobados</p>
-      <article class="starter-workspace">
+      <article class="starter-workspace" id="starter-workspace" role="tabpanel" aria-labelledby="starter-module-title">
         <div class="starter-lesson">
           <p class="project-kicker" id="starter-kicker"></p>
           <h2 id="starter-module-title"></h2>
           <p class="starter-intro" id="starter-intro"></p>
           <div class="concept-card lesson-explanation"><code id="starter-example"></code><div><h3>La idea clave</h3><p id="starter-explanation"></p><ul id="starter-concepts"></ul></div></div>
-          <div class="project-goal"><span aria-hidden="true">✓</span><p><strong>Tu misión</strong><span id="starter-goal"></span></p></div>
+          <aside class="lesson-primer" id="learning-guidance" aria-label="Guía de la misión"></aside><div class="project-goal"><span aria-hidden="true">✓</span><p><strong>Tu misión</strong><span id="starter-goal"></span></p></div>
           <div class="hint-box"><div><div><span>AYUDA GRADUAL</span><strong>Pistas del módulo</strong></div><button type="button" id="starter-show-hint">Ver pista 1</button></div><ol id="starter-hints" aria-live="polite"></ol></div>
         </div>
 
@@ -143,9 +148,11 @@
 
   <footer><div class="footer-inner"><a class="brand footer-brand" href="index.html"><span class="brand-mark" aria-hidden="true">&gt;_</span><span>Código Cero</span></a><p>Programación clara para dar el primer paso.</p><p class="footer-meta">Hecho para aprender · <span data-current-year></span></p></div></footer>
 
-  <script src="site.js?v=20260902-depth1"></script>
+  <script src="learning-state.js?v=20260903-review1"></script>
+  <script src="site.js?v=20260903-review1"></script>
   <script src="starter-runtime.js?v=20260902-depth1"></script>
   <script src="starter-exams.js?v=20260902-checkpoints2"></script>
-  <script src="starter-course.js?v=20260902-sql1"></script>
+  <script src="learning-guidance.js?v=20260903-review1"></script>
+  <script src="starter-course.js?v=20260903-review1"></script>
 </body>
 </html>

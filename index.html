@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="es-CL">
+<html lang="es-CL" class="is-maintenance">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -32,6 +32,8 @@
         robots.name = "robots";
         robots.content = "noindex, nofollow";
         document.head.append(robots);
+      } else {
+        document.documentElement.classList.remove("is-maintenance");
       }
       const preferred = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
       try {
@@ -42,11 +44,13 @@
       }
     })();
   </script>
+  <script src="review-preview.js?v=20260903-review1"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&display=swap" rel="stylesheet">
   <link rel="icon" href="favicon.svg?v=20260902-bmw1" type="image/svg+xml">
   <link rel="stylesheet" href="styles.css?v=20260902-checkpoints2">
+  <link rel="stylesheet" href="learning-review.css?v=20260903-review1">
 </head>
 <body>
   <section class="maintenance-screen" aria-labelledby="maintenance-title">
@@ -125,24 +129,36 @@
         <p>Ocho rutas para explorar a tu ritmo. Comienza con los fundamentos o prueba los nuevos mini cursos guiados: cada tecnología tiene su propia página y su progreso independiente.</p>
       </div>
 
+      <section class="continue-learning" id="continue-learning" aria-labelledby="continue-title" hidden><div><h3 id="continue-title">Tu próxima sesión</h3><p id="continue-description"></p></div><a class="button button-primary" id="continue-link" href="#rutas">Continuar donde quedaste →</a></section>
+      <p class="catalog-storage" id="catalog-storage">El avance se guarda solo en este navegador.</p>
+      <h3 class="catalog-group-title">Rutas de fundamentos</h3>
+      <p class="catalog-group-copy">12 ejercicios en 3 niveles y 3 mini exámenes por ruta. Practica en un editor educativo con un alcance acotado; completar esta introducción no equivale a dominar toda la tecnología.</p>
       <div class="technology-grid">
-        <a class="technology-card is-available" href="python.html">
+        <a class="technology-card is-available" href="python.html" data-learning-route="python">
           <div class="technology-top"><span class="technology-icon">Py</span><span class="status status-open">Disponible</span></div>
-          <h2>Python</h2>
+          <h4>Python</h4>
           <p>3 niveles y 12 proyectos para aprender fundamentos, decisiones y funciones.</p>
-          <strong>Abrir ruta <span aria-hidden="true">→</span></strong>
+          <div class="route-progress"><span data-route-progress>0/12 ejercicios</span><div class="route-progress-track" aria-hidden="true"><span data-route-fill></span></div><small data-route-detail></small></div><strong data-route-action>Abrir ruta <span aria-hidden="true">→</span></strong>
         </a>
-        <a class="technology-card is-preview" href="html-css.html"><div class="technology-top"><span class="technology-icon">&lt;/&gt;</span><span class="status status-preview">12 módulos</span></div><h2>HTML y CSS</h2><p>Estructura, estilos, flexbox, grid y un componente responsive.</p><strong>Abrir ruta <span aria-hidden="true">→</span></strong></a>
-        <a class="technology-card is-preview" href="javascript.html"><div class="technology-top"><span class="technology-icon">JS</span><span class="status status-preview">12 módulos</span></div><h2>JavaScript</h2><p>Datos, decisiones, listas, ciclos y funciones con resultados inmediatos.</p><strong>Abrir ruta <span aria-hidden="true">→</span></strong></a>
-        <a class="technology-card is-preview" href="sql.html"><div class="technology-top"><span class="technology-icon">SQL</span><span class="status status-preview">12 módulos + práctica</span></div><h2>SQL</h2><p>Desde leer una tabla hasta unir datos: ejemplos paso a paso y tres desafíos extra.</p><strong>Abrir ruta <span aria-hidden="true">→</span></strong></a>
-        <a class="technology-card is-preview" href="nodejs.html"><div class="technology-top"><span class="technology-icon">Node</span><span class="status status-preview">3 mini proyectos</span></div><h2>Node.js</h2><p>De la terminal a un archivo JSON y tu primera respuesta HTTP, paso a paso.</p><strong>Abrir mini curso <span aria-hidden="true">→</span></strong></a>
-        <a class="technology-card is-preview" href="datos-python.html"><div class="technology-top"><span class="technology-icon">Dat</span><span class="status status-preview">3 mini proyectos</span></div><h2>Datos con Python</h2><p>Resume ventas, limpia etiquetas y prepara un reporte con datos de práctica.</p><strong>Abrir mini curso <span aria-hidden="true">→</span></strong></a>
-        <a class="technology-card is-preview" href="react.html"><div class="technology-top"><span class="technology-icon">Re</span><span class="status status-preview">3 mini proyectos</span></div><h2>React</h2><p>Comprende JSX, reutiliza componentes con props y construye un contador guiado.</p><strong>Abrir mini curso <span aria-hidden="true">→</span></strong></a>
-        <a class="technology-card is-preview" href="typescript.html"><div class="technology-top"><span class="technology-icon">TS</span><span class="status status-preview">3 mini proyectos</span></div><h2>TypeScript</h2><p>Distingue números y textos, define funciones y describe objetos con interfaces.</p><strong>Abrir mini curso <span aria-hidden="true">→</span></strong></a>
-        <article class="technology-card is-locked"><div class="technology-top"><span class="technology-icon">Git</span><span class="status">Próximamente</span></div><h2>Git y GitHub</h2><p>Guarda versiones de tu trabajo, vuelve atrás sin miedo y publica tus proyectos.</p></article>
-        <article class="technology-card is-locked"><div class="technology-top"><span class="technology-icon">&gt;_</span><span class="status">Próximamente</span></div><h2>Terminal</h2><p>Muévete por tu computador con comandos y prepara tu entorno de trabajo.</p></article>
-        <article class="technology-card is-locked"><div class="technology-top"><span class="technology-icon">API</span><span class="status">Próximamente</span></div><h2>APIs</h2><p>Pide datos a otros servicios y muéstralos dentro de tus propios proyectos.</p></article>
-        <article class="technology-card is-locked"><div class="technology-top"><span class="technology-icon">IA</span><span class="status">Próximamente</span></div><h2>Inteligencia artificial</h2><p>Escribe mejores instrucciones, revisa lo que responde un modelo y conéctalo a tu código.</p></article>
+        <a class="technology-card is-preview" href="html-css.html" data-learning-route="html-css"><div class="technology-top"><span class="technology-icon">&lt;/&gt;</span><span class="status status-preview">12 módulos</span></div><h4>HTML y CSS</h4><p>Estructura, estilos, flexbox, grid y un componente responsive.</p><div class="route-progress"><span data-route-progress>0/12 ejercicios</span><div class="route-progress-track" aria-hidden="true"><span data-route-fill></span></div><small data-route-detail></small></div><strong data-route-action>Abrir ruta <span aria-hidden="true">→</span></strong></a>
+        <a class="technology-card is-preview" href="javascript.html" data-learning-route="javascript"><div class="technology-top"><span class="technology-icon">JS</span><span class="status status-preview">12 módulos</span></div><h4>JavaScript</h4><p>Datos, decisiones, listas, ciclos y funciones con resultados inmediatos.</p><div class="route-progress"><span data-route-progress>0/12 ejercicios</span><div class="route-progress-track" aria-hidden="true"><span data-route-fill></span></div><small data-route-detail></small></div><strong data-route-action>Abrir ruta <span aria-hidden="true">→</span></strong></a>
+        <a class="technology-card is-preview" href="sql.html" data-learning-route="sql"><div class="technology-top"><span class="technology-icon">SQL</span><span class="status status-preview">12 módulos + práctica</span></div><h4>SQL</h4><p>Desde leer una tabla hasta unir datos: ejemplos paso a paso y tres desafíos extra.</p><div class="route-progress"><span data-route-progress>0/12 ejercicios</span><div class="route-progress-track" aria-hidden="true"><span data-route-fill></span></div><small data-route-detail></small></div><strong data-route-action>Abrir ruta <span aria-hidden="true">→</span></strong></a>
+      </div>
+      <h3 class="catalog-group-title">Mini cursos guiados</h3>
+      <p class="catalog-group-copy">3 proyectos por tecnología. Elige fragmentos, observa el código y prueba una simulación didáctica. No son editores libres ni incluyen exámenes. Te servirán las bases de JavaScript o Python.</p>
+      <div class="technology-grid">
+        <a class="technology-card is-preview" href="nodejs.html" data-learning-route="nodejs"><div class="technology-top"><span class="technology-icon">Node</span><span class="status status-preview">3 mini proyectos</span></div><h4>Node.js</h4><p>De la terminal a un archivo JSON y tu primera respuesta HTTP, paso a paso.</p><div class="route-progress"><span data-route-progress>0/3 mini proyectos</span><div class="route-progress-track" aria-hidden="true"><span data-route-fill></span></div><small data-route-detail></small></div><strong data-route-action>Abrir mini curso <span aria-hidden="true">→</span></strong></a>
+        <a class="technology-card is-preview" href="datos-python.html" data-learning-route="datos-python"><div class="technology-top"><span class="technology-icon">Dat</span><span class="status status-preview">3 mini proyectos</span></div><h4>Datos con Python</h4><p>Resume ventas, limpia etiquetas y prepara un reporte con datos de práctica.</p><div class="route-progress"><span data-route-progress>0/3 mini proyectos</span><div class="route-progress-track" aria-hidden="true"><span data-route-fill></span></div><small data-route-detail></small></div><strong data-route-action>Abrir mini curso <span aria-hidden="true">→</span></strong></a>
+        <a class="technology-card is-preview" href="react.html" data-learning-route="react"><div class="technology-top"><span class="technology-icon">Re</span><span class="status status-preview">3 mini proyectos</span></div><h4>React</h4><p>Comprende JSX, reutiliza componentes con props y construye un contador guiado.</p><div class="route-progress"><span data-route-progress>0/3 mini proyectos</span><div class="route-progress-track" aria-hidden="true"><span data-route-fill></span></div><small data-route-detail></small></div><strong data-route-action>Abrir mini curso <span aria-hidden="true">→</span></strong></a>
+        <a class="technology-card is-preview" href="typescript.html" data-learning-route="typescript"><div class="technology-top"><span class="technology-icon">TS</span><span class="status status-preview">3 mini proyectos</span></div><h4>TypeScript</h4><p>Distingue números y textos, define funciones y describe objetos con interfaces.</p><div class="route-progress"><span data-route-progress>0/3 mini proyectos</span><div class="route-progress-track" aria-hidden="true"><span data-route-fill></span></div><small data-route-detail></small></div><strong data-route-action>Abrir mini curso <span aria-hidden="true">→</span></strong></a>
+      </div>
+      <h3 class="catalog-group-title">Más adelante</h3>
+      <p class="catalog-group-copy">Estas rutas aún no están disponibles.</p>
+      <div class="technology-grid">
+        <article class="technology-card is-locked"><div class="technology-top"><span class="technology-icon">Git</span><span class="status">Próximamente</span></div><h4>Git y GitHub</h4><p>Guarda versiones de tu trabajo, vuelve atrás sin miedo y publica tus proyectos.</p></article>
+        <article class="technology-card is-locked"><div class="technology-top"><span class="technology-icon">&gt;_</span><span class="status">Próximamente</span></div><h4>Terminal</h4><p>Muévete por tu computador con comandos y prepara tu entorno de trabajo.</p></article>
+        <article class="technology-card is-locked"><div class="technology-top"><span class="technology-icon">API</span><span class="status">Próximamente</span></div><h4>APIs</h4><p>Pide datos a otros servicios y muéstralos dentro de tus propios proyectos.</p></article>
+        <article class="technology-card is-locked"><div class="technology-top"><span class="technology-icon">IA</span><span class="status">Próximamente</span></div><h4>Inteligencia artificial</h4><p>Escribe mejores instrucciones, revisa lo que responde un modelo y conéctalo a tu código.</p></article>
       </div>
     </section>
   </main>
@@ -155,6 +171,8 @@
     </div>
   </footer>
 
-  <script src="site.js?v=20260902-depth1"></script>
+  <script src="learning-state.js?v=20260903-review1"></script>
+  <script src="catalog.js?v=20260903-review1"></script>
+  <script src="site.js?v=20260903-review1"></script>
 </body>
 </html>

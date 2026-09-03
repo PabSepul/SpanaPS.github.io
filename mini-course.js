@@ -29,6 +29,7 @@
   function persist() {
     try { localStorage.setItem(key, JSON.stringify({ completed: [...completed], drafts, active })); persistent = true; }
     catch { persistent = false; }
+    globalThis.LearningState?.save(id, active);
     storageNotice();
   }
 
