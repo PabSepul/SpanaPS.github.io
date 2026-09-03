@@ -3,20 +3,20 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Elige qué aprender y comienza con tres mini proyectos de Python para entender sus fundamentos y practicar en el navegador.">
+  <meta name="description" content="Descubre rutas prácticas para aprender programación creando proyectos desde el primer día.">
   <meta name="theme-color" content="#1c69d4">
   <meta property="og:type" content="website">
   <meta property="og:locale" content="es_CL">
   <meta property="og:url" content="https://www.intenta.cl/">
   <meta property="og:title" content="Código Cero — Aprende programación creando">
-  <meta property="og:description" content="Elige una tecnología y empieza con tres mini proyectos de Python.">
+  <meta property="og:description" content="Elige una tecnología y aprende construyendo proyectos paso a paso.">
   <meta property="og:image" content="https://www.intenta.cl/og.png?v=20260902-bmw">
   <meta property="og:image:alt" content="Código Cero — Aprende programación creando.">
   <meta property="og:image:width" content="1731">
   <meta property="og:image:height" content="909">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Código Cero — Aprende programación creando">
-  <meta name="twitter:description" content="Elige una tecnología y empieza con tres mini proyectos de Python.">
+  <meta name="twitter:description" content="Elige una tecnología y aprende construyendo proyectos paso a paso.">
   <meta name="twitter:image" content="https://www.intenta.cl/og.png?v=20260902-bmw">
   <meta name="twitter:image:alt" content="Código Cero — Aprende programación creando.">
   <title>Código Cero — Aprende programación creando</title>
@@ -25,7 +25,6 @@
       const publicHosts = ["intenta.cl", "www.intenta.cl"];
       const showMaintenance = publicHosts.includes(window.location.hostname)
         || new URLSearchParams(window.location.search).has("maintenance");
-
       if (showMaintenance) {
         document.documentElement.classList.add("is-maintenance");
         document.title = "Código Cero — Estamos preparando algo nuevo";
@@ -34,7 +33,6 @@
         robots.content = "noindex, nofollow";
         document.head.append(robots);
       }
-
       const preferred = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
       try {
         const saved = localStorage.getItem("codigo-cero.theme");
@@ -48,7 +46,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&display=swap" rel="stylesheet">
   <link rel="icon" href="favicon.svg?v=20260902-bmw1" type="image/svg+xml">
-  <link rel="stylesheet" href="styles.css?v=20260902-maintenance1">
+  <link rel="stylesheet" href="styles.css?v=20260902-checkpoints2">
 </head>
 <body>
   <section class="maintenance-screen" aria-labelledby="maintenance-title">
@@ -56,7 +54,7 @@
       <div class="maintenance-brand"><span aria-hidden="true">&gt;_</span> Código Cero</div>
       <p class="maintenance-kicker">Actualización en curso</p>
       <h1 id="maintenance-title">Estamos preparando la siguiente etapa.</h1>
-      <p>La ruta de Python está creciendo con más niveles, nuevos proyectos y mejores explicaciones.</p>
+      <p>Estamos preparando nuevas rutas, ejercicios y mejores explicaciones para aprender paso a paso.</p>
       <div class="maintenance-progress" aria-hidden="true"><span></span></div>
       <small>Volvemos pronto.</small>
     </div>
@@ -70,9 +68,9 @@
       <span>Código Cero</span>
     </a>
     <nav aria-label="Navegación principal">
-      <a href="#tecnologias">Tecnologías</a>
-      <a href="#ruta">Ruta Python</a>
-      <a href="#metodo">Cómo funciona</a>
+      <a href="#que-es">Qué es</a>
+      <a href="#rutas">Rutas</a>
+      <a href="#como-aprender">Cómo aprenderás</a>
     </nav>
     <div class="header-actions">
       <button class="theme-toggle" id="theme-toggle" type="button" aria-pressed="false" aria-label="Activar modo oscuro">
@@ -80,218 +78,71 @@
         <svg class="theme-icon theme-icon-sun" aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.42-1.41M17.66 6.34l1.41-1.41"/></svg>
         <span id="theme-toggle-label">Oscuro</span>
       </button>
-      <a class="header-cta" href="#proyectos">Comenzar</a>
+      <a class="header-cta" href="#rutas">Explorar rutas</a>
     </div>
   </header>
 
   <main id="contenido">
-    <section class="learning-menu" id="inicio" aria-labelledby="learning-title">
-      <div class="learning-intro" id="tecnologias">
-        <p class="eyebrow"><span></span> Elige tu punto de partida</p>
-        <h1 id="learning-title">¿Qué deseas aprender hoy?</h1>
-        <p>Comenzamos con una ruta breve de Python. Las demás tecnologías se abrirán paso a paso para aprender sin dispersarse.</p>
+    <section class="landing-hero" id="inicio" aria-labelledby="landing-title">
+      <div class="landing-copy">
+        <p class="eyebrow"><span></span> Programación desde cero</p>
+        <h1 id="landing-title">Aprende una tecnología construyendo algo.</h1>
+        <p>No necesitas elegir entre cientos de cursos. Escoge una ruta, comprende una idea y aplícala inmediatamente en un proyecto pequeño.</p>
+        <div class="hero-actions">
+          <a class="button button-primary" href="#rutas">Ver qué puedo aprender <span aria-hidden="true">↓</span></a>
+          <span class="route-duration">Sin instalaciones · A tu ritmo</span>
+        </div>
+      </div>
+
+      <div class="learning-map" id="como-aprender" aria-label="Cómo se aprende en Código Cero">
+        <p>El método</p>
+        <ol>
+          <li><span>01</span><div><strong>Comprende</strong><small>Una idea clara y concreta.</small></div></li>
+          <li><span>02</span><div><strong>Intenta</strong><small>Código que puedes modificar.</small></div></li>
+          <li><span>03</span><div><strong>Comprueba</strong><small>Validación antes de avanzar.</small></div></li>
+        </ol>
+      </div>
+    </section>
+
+    <section class="about-section" id="que-es" aria-labelledby="about-title">
+      <div class="about-heading">
+        <p class="eyebrow"><span></span> Una plataforma que puede crecer</p>
+        <h2 id="about-title">Una portada para elegir. Una página para cada tecnología.</h2>
+        <p>Código Cero organiza el aprendizaje para que siempre sepas dónde estás y cuál es el siguiente paso, aunque el catálogo siga creciendo.</p>
+      </div>
+
+      <div class="experience-flow" aria-label="Recorrido de aprendizaje">
+        <article><span>01</span><h3>Explora</h3><p>Conoce las tecnologías disponibles desde una portada simple.</p></article>
+        <article><span>02</span><h3>Entra en una ruta</h3><p>Cada tecnología abre su propio espacio, niveles y proyectos.</p></article>
+        <article><span>03</span><h3>Continúa</h3><p>Tu progreso permanece dentro de la ruta que estás aprendiendo.</p></article>
+      </div>
+    </section>
+
+    <section class="routes-section" id="rutas" aria-labelledby="routes-title">
+      <div class="routes-heading">
+        <p class="eyebrow"><span></span> Rutas de aprendizaje</p>
+        <h2 id="routes-title">¿Qué deseas aprender?</h2>
+        <p>Ocho rutas para explorar a tu ritmo. Comienza con los fundamentos o prueba los nuevos mini cursos guiados: cada tecnología tiene su propia página y su progreso independiente.</p>
       </div>
 
       <div class="technology-grid">
-        <a class="technology-card is-available" href="#ruta">
+        <a class="technology-card is-available" href="python.html">
           <div class="technology-top"><span class="technology-icon">Py</span><span class="status status-open">Disponible</span></div>
           <h2>Python</h2>
-          <p>3 proyectos para entender lo esencial y practicar.</p>
-          <strong>Ver ruta <span aria-hidden="true">→</span></strong>
+          <p>3 niveles y 12 proyectos para aprender fundamentos, decisiones y funciones.</p>
+          <strong>Abrir ruta <span aria-hidden="true">→</span></strong>
         </a>
-        <article class="technology-card is-locked">
-          <div class="technology-top"><span class="technology-icon">&lt;/&gt;</span><span class="status">Próximamente</span></div>
-          <h2>HTML y CSS</h2><p>Crea tu primera página web.</p>
-        </article>
-        <article class="technology-card is-locked">
-          <div class="technology-top"><span class="technology-icon">JS</span><span class="status">Próximamente</span></div>
-          <h2>JavaScript</h2><p>Agrega interacción a tus ideas.</p>
-        </article>
-        <article class="technology-card is-locked">
-          <div class="technology-top"><span class="technology-icon">SQL</span><span class="status">Próximamente</span></div>
-          <h2>SQL</h2><p>Aprende a consultar datos.</p>
-        </article>
-        <article class="technology-card is-locked">
-          <div class="technology-top"><span class="technology-icon">Git</span><span class="status">Próximamente</span></div>
-          <h2>Git y GitHub</h2><p>Guarda y comparte tus proyectos.</p>
-        </article>
-        <article class="technology-card is-locked">
-          <div class="technology-top"><span class="technology-icon">API</span><span class="status">Próximamente</span></div>
-          <h2>APIs</h2><p>Conecta programas y servicios.</p>
-        </article>
-      </div>
-    </section>
-
-    <section class="python-hero" id="ruta" aria-labelledby="python-title">
-      <div class="hero-copy">
-        <p class="eyebrow"><span></span> Tu primera ruta · Python</p>
-        <h2 id="python-title">Aprende Python creando tres cosas pequeñas.</h2>
-        <p class="hero-lead">Empieza mostrando un mensaje, continúa combinando datos y termina resolviendo un práctico sencillo.</p>
-        <div class="hero-actions">
-          <a class="button button-primary" href="#proyectos">Abrir el proyecto 1 <span aria-hidden="true">→</span></a>
-          <span class="route-duration">3 proyectos · 35 minutos</span>
-        </div>
-        <ul class="hero-notes" aria-label="Características de la ruta">
-          <li>Sin instalaciones</li>
-          <li>Ejemplos editables</li>
-          <li>Progreso guardado</li>
-        </ul>
-      </div>
-
-      <div class="code-demo" aria-label="Ejemplo interactivo de Python">
-        <div class="window-bar">
-          <div class="window-dots" aria-hidden="true"><i></i><i></i><i></i></div>
-          <span>hola.py</span>
-          <span class="language">Python</span>
-        </div>
-        <div class="editor-wrap">
-          <span class="line-number" aria-hidden="true">1</span>
-          <textarea id="hero-code" rows="2" spellcheck="false" aria-label="Código Python de ejemplo">print("Hola, Python")</textarea>
-        </div>
-        <div class="demo-controls">
-          <button class="run-button" id="hero-run" type="button"><span aria-hidden="true">▶</span> Ejecutar</button>
-          <span>Modifica el mensaje y pruébalo</span>
-        </div>
-        <div class="console" aria-live="polite">
-          <div class="console-label">RESULTADO</div>
-          <div id="hero-output"><span aria-hidden="true">›</span> Presiona “Ejecutar” para ver el resultado.</div>
-        </div>
-        <div class="demo-tip"><span aria-hidden="true">✦</span> El laboratorio acepta las instrucciones usadas en esta ruta.</div>
-      </div>
-    </section>
-
-    <section class="route-strip" aria-label="Proyectos de la ruta Python">
-      <button type="button" data-project-target="1"><strong>01</strong><span>Tu primer mensaje</span><small>Introducción</small></button>
-      <button type="button" data-project-target="2"><strong>02</strong><span>Tu ficha personal</span><small>Variables</small></button>
-      <button type="button" data-project-target="3"><strong>03</strong><span>Conversor de tiempo</span><small>Práctico</small></button>
-    </section>
-
-    <section class="projects-section" id="proyectos" aria-labelledby="projects-title">
-      <div class="projects-heading">
-        <div>
-          <p class="eyebrow"><span></span> Laboratorio Python</p>
-          <h2 id="projects-title">Tres proyectos. Una idea nueva en cada uno.</h2>
-        </div>
-        <div class="route-progress" aria-label="Progreso de la ruta">
-          <div><span>Tu avance</span><strong id="route-progress-text">0 de 3</strong></div>
-          <div class="progress-track" aria-hidden="true"><span id="route-progress-fill"></span></div>
-        </div>
-      </div>
-
-      <div class="project-tabs" role="tablist" aria-label="Proyectos de Python">
-        <button id="tab-project-1" role="tab" aria-selected="true" aria-controls="project-1" data-project-tab="1"><span>01</span> Primer mensaje <i data-tab-state="1">Empezar</i></button>
-        <button id="tab-project-2" role="tab" aria-selected="false" aria-controls="project-2" tabindex="-1" data-project-tab="2"><span>02</span> Ficha personal <i data-tab-state="2">Empezar</i></button>
-        <button id="tab-project-3" role="tab" aria-selected="false" aria-controls="project-3" tabindex="-1" data-project-tab="3"><span>03</span> Conversor <i data-tab-state="3">Empezar</i></button>
-      </div>
-
-      <div class="project-shell">
-        <article class="project-panel" id="project-1" role="tabpanel" aria-labelledby="tab-project-1" data-project-panel="1">
-          <div class="project-lesson">
-            <p class="project-kicker">Proyecto 01 · Introducción · 8 min</p>
-            <h3>Haz que Python muestre un mensaje</h3>
-            <p>Un programa es una serie de instrucciones. Comenzaremos con <code>print()</code>, una función que muestra información.</p>
-            <div class="concept-card">
-              <code>print("Hola, Python")</code>
-              <dl><div><dt><code>print</code></dt><dd>La acción que queremos ejecutar.</dd></div><div><dt><code>"..."</code></dt><dd>El texto que queremos mostrar.</dd></div></dl>
-            </div>
-            <div class="project-goal"><span aria-hidden="true">✓</span><p><strong>Tu misión</strong>Cambia el texto por un mensaje propio y ejecútalo.</p></div>
-          </div>
-          <div class="project-lab">
-            <div class="lab-heading"><div><span>EJERCICIO</span><strong>Tu primer mensaje</strong></div><span class="difficulty">Principiante</span></div>
-            <div class="lab-editor">
-              <div class="lab-file"><span aria-hidden="true">●</span> proyecto_1.py</div>
-              <label class="sr-only" for="code-project-1">Código del proyecto 1</label>
-              <div class="code-input"><span aria-hidden="true">1</span><textarea id="code-project-1" rows="5" spellcheck="false" data-project-code="1">print("Estoy aprendiendo Python")</textarea></div>
-              <div class="lab-actions"><button class="run-button" type="button" data-run-project="1"><span aria-hidden="true">▶</span> Ejecutar código</button><button class="reset-button" type="button" data-reset-project="1">Restablecer</button></div>
-              <div class="lab-console" aria-live="polite"><span>RESULTADO</span><div data-project-output="1">Tu mensaje aparecerá aquí.</div></div>
-            </div>
-            <div class="lab-success" data-project-success="1" hidden><span aria-hidden="true">✓</span><div><strong>¡Tu primer programa funciona!</strong><p>Ya sabes mostrar información con Python.</p></div></div>
-            <button class="button complete-project" type="button" data-complete-project="1" disabled>Completar proyecto</button>
-          </div>
-        </article>
-
-        <article class="project-panel" id="project-2" role="tabpanel" aria-labelledby="tab-project-2" data-project-panel="2" hidden>
-          <div class="project-lesson">
-            <p class="project-kicker">Proyecto 02 · Entendimiento · 12 min</p>
-            <h3>Guarda datos en variables</h3>
-            <p>Una variable relaciona un nombre con un dato. Así puedes guardar información y reutilizarla más adelante.</p>
-            <div class="concept-card">
-              <code>nombre = "Ada"</code>
-              <dl><div><dt><code>nombre</code></dt><dd>La etiqueta que identifica el dato.</dd></div><div><dt><code>"Ada"</code></dt><dd>El valor guardado en la variable.</dd></div></dl>
-            </div>
-            <div class="project-goal"><span aria-hidden="true">✓</span><p><strong>Tu misión</strong>Cambia el nombre y la edad para crear tu propia ficha.</p></div>
-          </div>
-          <div class="project-lab">
-            <div class="lab-heading"><div><span>EJERCICIO</span><strong>Tu ficha personal</strong></div><span class="difficulty">Principiante</span></div>
-            <div class="lab-editor">
-              <div class="lab-file"><span aria-hidden="true">●</span> proyecto_2.py</div>
-              <label class="sr-only" for="code-project-2">Código del proyecto 2</label>
-              <div class="code-input with-lines"><span aria-hidden="true">1<br>2<br>3</span><textarea id="code-project-2" rows="5" spellcheck="false" data-project-code="2">nombre = "Ada"
-edad = 28
-print(f"Soy {nombre} y tengo {edad} años")</textarea></div>
-              <div class="lab-actions"><button class="run-button" type="button" data-run-project="2"><span aria-hidden="true">▶</span> Ejecutar código</button><button class="reset-button" type="button" data-reset-project="2">Restablecer</button></div>
-              <div class="lab-console" aria-live="polite"><span>RESULTADO</span><div data-project-output="2">Tu ficha aparecerá aquí.</div></div>
-            </div>
-            <div class="lab-success" data-project-success="2" hidden><span aria-hidden="true">✓</span><div><strong>¡Combinaste datos y texto!</strong><p>Ahora entiendes variables y textos con formato.</p></div></div>
-            <button class="button complete-project" type="button" data-complete-project="2" disabled>Completar proyecto</button>
-          </div>
-        </article>
-
-        <article class="project-panel" id="project-3" role="tabpanel" aria-labelledby="tab-project-3" data-project-panel="3" hidden>
-          <div class="project-lesson">
-            <p class="project-kicker">Proyecto 03 · Práctico · 15 min</p>
-            <h3>Convierte minutos en horas</h3>
-            <p>Usaremos números, variables y dos operadores: <code>//</code> obtiene horas completas y <code>%</code> calcula los minutos restantes.</p>
-            <div class="concept-card compact-formula">
-              <code>135 // 60 → 2</code><code>135 % 60 → 15</code>
-              <p>Dos horas completas y quince minutos restantes.</p>
-            </div>
-            <div class="project-goal"><span aria-hidden="true">✓</span><p><strong>Tu misión</strong>Cambia la cantidad de minutos, ejecuta y comprueba la conversión.</p></div>
-          </div>
-          <div class="project-lab">
-            <div class="lab-heading"><div><span>PRÁCTICO</span><strong>Conversor de tiempo</strong></div><span class="difficulty">Fundamentos</span></div>
-            <div class="lab-editor">
-              <div class="lab-file"><span aria-hidden="true">●</span> proyecto_3.py</div>
-              <label class="sr-only" for="code-project-3">Código del proyecto 3</label>
-              <div class="code-input with-lines"><span aria-hidden="true">1<br>2<br>3<br>4</span><textarea id="code-project-3" rows="6" spellcheck="false" data-project-code="3">minutos = 135
-horas = minutos // 60
-resto = minutos % 60
-print(f"{horas} h y {resto} min")</textarea></div>
-              <div class="lab-actions"><button class="run-button" type="button" data-run-project="3"><span aria-hidden="true">▶</span> Ejecutar código</button><button class="reset-button" type="button" data-reset-project="3">Restablecer</button></div>
-              <div class="lab-console" aria-live="polite"><span>RESULTADO</span><div data-project-output="3">La conversión aparecerá aquí.</div></div>
-            </div>
-            <div class="lab-success" data-project-success="3" hidden><span aria-hidden="true">✓</span><div><strong>¡Resolviste el práctico!</strong><p>Combinaste variables, operaciones y una salida.</p></div></div>
-            <button class="button complete-project" type="button" data-complete-project="3" disabled>Completar proyecto</button>
-          </div>
-        </article>
-      </div>
-
-      <div class="project-navigation">
-        <button type="button" class="nav-project-button" id="previous-project" disabled><span aria-hidden="true">←</span> Proyecto anterior</button>
-        <p id="project-position">Proyecto 1 de 3</p>
-        <button type="button" class="nav-project-button" id="next-project">Siguiente proyecto <span aria-hidden="true">→</span></button>
-      </div>
-
-      <div class="python-finish" id="python-finish" hidden>
-        <span aria-hidden="true">✓</span>
-        <div><p>Ruta inicial completada</p><h3>Ya entiendes las piezas básicas de un programa.</h3><small>Lo siguiente será usar decisiones y repeticiones para crear programas más inteligentes.</small></div>
-      </div>
-    </section>
-
-    <section class="method-section" id="metodo" aria-labelledby="method-title">
-      <div class="section-heading centered-heading">
-        <p class="eyebrow"><span></span> Aprender sin enredos</p>
-        <h2 id="method-title">Entiende una idea. Úsala. Comprueba.</h2>
-        <p>Las rutas crecen de forma gradual: cada proyecto recupera lo anterior y agrega una pieza nueva.</p>
-      </div>
-      <div class="method-grid">
-        <article><span>01</span><h3>Lee</h3><p>Una explicación breve y concentrada en una sola idea.</p></article>
-        <article><span>02</span><h3>Modifica</h3><p>Código realista que puedes cambiar sin romper nada.</p></article>
-        <article><span>03</span><h3>Construye</h3><p>Un pequeño resultado que demuestra lo que aprendiste.</p></article>
-      </div>
-      <div class="final-cta">
-        <div><p>La ruta ya está preparada.</p><h2>Python es tu primer paso.</h2></div>
-        <a class="button button-light" href="#proyectos">Abrir laboratorio <span aria-hidden="true">↑</span></a>
+        <a class="technology-card is-preview" href="html-css.html"><div class="technology-top"><span class="technology-icon">&lt;/&gt;</span><span class="status status-preview">12 módulos</span></div><h2>HTML y CSS</h2><p>Estructura, estilos, flexbox, grid y un componente responsive.</p><strong>Abrir ruta <span aria-hidden="true">→</span></strong></a>
+        <a class="technology-card is-preview" href="javascript.html"><div class="technology-top"><span class="technology-icon">JS</span><span class="status status-preview">12 módulos</span></div><h2>JavaScript</h2><p>Datos, decisiones, listas, ciclos y funciones con resultados inmediatos.</p><strong>Abrir ruta <span aria-hidden="true">→</span></strong></a>
+        <a class="technology-card is-preview" href="sql.html"><div class="technology-top"><span class="technology-icon">SQL</span><span class="status status-preview">12 módulos + práctica</span></div><h2>SQL</h2><p>Desde leer una tabla hasta unir datos: ejemplos paso a paso y tres desafíos extra.</p><strong>Abrir ruta <span aria-hidden="true">→</span></strong></a>
+        <a class="technology-card is-preview" href="nodejs.html"><div class="technology-top"><span class="technology-icon">Node</span><span class="status status-preview">3 mini proyectos</span></div><h2>Node.js</h2><p>De la terminal a un archivo JSON y tu primera respuesta HTTP, paso a paso.</p><strong>Abrir mini curso <span aria-hidden="true">→</span></strong></a>
+        <a class="technology-card is-preview" href="datos-python.html"><div class="technology-top"><span class="technology-icon">Dat</span><span class="status status-preview">3 mini proyectos</span></div><h2>Datos con Python</h2><p>Resume ventas, limpia etiquetas y prepara un reporte con datos de práctica.</p><strong>Abrir mini curso <span aria-hidden="true">→</span></strong></a>
+        <a class="technology-card is-preview" href="react.html"><div class="technology-top"><span class="technology-icon">Re</span><span class="status status-preview">3 mini proyectos</span></div><h2>React</h2><p>Comprende JSX, reutiliza componentes con props y construye un contador guiado.</p><strong>Abrir mini curso <span aria-hidden="true">→</span></strong></a>
+        <a class="technology-card is-preview" href="typescript.html"><div class="technology-top"><span class="technology-icon">TS</span><span class="status status-preview">3 mini proyectos</span></div><h2>TypeScript</h2><p>Distingue números y textos, define funciones y describe objetos con interfaces.</p><strong>Abrir mini curso <span aria-hidden="true">→</span></strong></a>
+        <article class="technology-card is-locked"><div class="technology-top"><span class="technology-icon">Git</span><span class="status">Próximamente</span></div><h2>Git y GitHub</h2><p>Guarda versiones de tu trabajo, vuelve atrás sin miedo y publica tus proyectos.</p></article>
+        <article class="technology-card is-locked"><div class="technology-top"><span class="technology-icon">&gt;_</span><span class="status">Próximamente</span></div><h2>Terminal</h2><p>Muévete por tu computador con comandos y prepara tu entorno de trabajo.</p></article>
+        <article class="technology-card is-locked"><div class="technology-top"><span class="technology-icon">API</span><span class="status">Próximamente</span></div><h2>APIs</h2><p>Pide datos a otros servicios y muéstralos dentro de tus propios proyectos.</p></article>
+        <article class="technology-card is-locked"><div class="technology-top"><span class="technology-icon">IA</span><span class="status">Próximamente</span></div><h2>Inteligencia artificial</h2><p>Escribe mejores instrucciones, revisa lo que responde un modelo y conéctalo a tu código.</p></article>
       </div>
     </section>
   </main>
@@ -300,10 +151,10 @@ print(f"{horas} h y {resto} min")</textarea></div>
     <div class="footer-inner">
       <a class="brand footer-brand" href="#inicio"><span class="brand-mark" aria-hidden="true">&gt;_</span><span>Código Cero</span></a>
       <p>Programación clara para dar el primer paso.</p>
-      <p class="footer-meta">Hecho para aprender · <span id="current-year"></span></p>
+      <p class="footer-meta">Hecho para aprender · <span data-current-year></span></p>
     </div>
   </footer>
 
-  <script src="script.js?v=20260902-bmw-dark2"></script>
+  <script src="site.js?v=20260902-depth1"></script>
 </body>
 </html>
