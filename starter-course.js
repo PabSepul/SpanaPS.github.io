@@ -562,7 +562,9 @@
         }
       ]
     },
-    sql: globalThis.SQLCourse
+    sql: globalThis.SQLCourse,
+    git: globalThis.GitCourse,
+    apis: globalThis.ApisCourse
   };
 
   const courseId = document.body.dataset.course;
@@ -962,6 +964,16 @@
       elements.preview.hidden = true;
       elements.output.hidden = false;
       elements.output.textContent = describeJavaScript(result);
+    } else if (course.kind === "git") {
+      result = globalThis.GitLab.run(code, module.scenario);
+      elements.preview.hidden = true;
+      elements.output.hidden = false;
+      elements.output.textContent = result.text;
+    } else if (course.kind === "api") {
+      result = globalThis.ApiLab.run(code);
+      elements.preview.hidden = true;
+      elements.output.hidden = false;
+      elements.output.textContent = result.text;
     } else {
       result = runtime.runSql(code);
       elements.preview.hidden = true;

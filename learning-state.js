@@ -7,6 +7,8 @@
     { id: "html-css", name: "HTML y CSS", count: 12, offset: 0, unit: "módulos" },
     { id: "javascript", name: "JavaScript", count: 12, offset: 0, unit: "módulos" },
     { id: "sql", name: "SQL", count: 12, offset: 0, unit: "módulos" },
+    { id: "git", name: "Git y GitHub", count: 12, offset: 0, unit: "módulos" },
+    { id: "apis", name: "APIs", count: 12, offset: 0, unit: "módulos" },
     { id: "nodejs", name: "Node.js", count: 3 },
     { id: "datos-python", name: "Datos con Python", count: 3 },
     { id: "react", name: "React", count: 3 },

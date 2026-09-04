@@ -22,7 +22,7 @@ No incluye módulos externos (`import`), `input()` ni `lambda`, y lo dice explí
 Las salidas del intérprete se contrastan con CPython 3.12: `python-runtime.test.mjs` guarda 65 programas con la salida
 real de Python y la vuelve a comparar en vivo cuando el equipo tiene Python instalado.
 
-Las cuatro rutas extensas (Python, HTML/CSS, JavaScript y SQL) funcionan con puntos de control: solo el primer nivel está abierto al comenzar y el siguiente se
+Las seis rutas extensas (Python, HTML/CSS, JavaScript, SQL, Git y GitHub, y APIs) funcionan con puntos de control: solo el primer nivel está abierto al comenzar y el siguiente se
 desbloquea al terminar los cuatro proyectos o módulos del anterior. Al cerrar un nivel aparece el mensaje de cierre de esa etapa
 (conceptos básicos, decisiones y ciclos, colecciones, funciones e integración final) y se habilita un mini examen de cinco preguntas, con
 cuatro alternativas, explicación por pregunta y umbral de cuatro aciertos. Los exámenes se pueden repetir y la ruta se
@@ -82,6 +82,9 @@ son unitarias, no una revisión visual en un navegador.
 - `sql.html`: introducción práctica a las consultas de datos.
 - `site.js`: comportamiento compartido, como el selector de tema.
 - `python-runtime.js`: intérprete de Python del laboratorio, contrastado con CPython.
+- `git-lab.js` y `git-course.js`: simulador de Git y los 12 módulos de la ruta Git y GitHub.
+- `api-lab.js` y `apis-course.js`: servidor HTTP simulado y los 12 módulos de la ruta APIs.
+- `routes-git-apis.test.mjs`: resuelve los 24 módulos nuevos y comprueba los laboratorios.
 - `python.js`: los 5 niveles, 20 proyectos, 5 exámenes y el progreso de la ruta Python.
 - `starter-runtime.js`: intérprete de JavaScript y motor de SQL usados por los laboratorios.
 - `sql-course.js`: contenido didáctico de los doce módulos de SQL, resultados esperados, comprobaciones exactas y tres desafíos extra. Conserva los índices y claves de progreso previos.
@@ -113,7 +116,27 @@ Los veinte proyectos de Python aceptan cualquier solución válida: el intérpre
 validaciones revisan la salida y las variables resultantes, no la forma del texto. Cambiar el código invalida una
 comprobación pendiente antes de poder completar.
 
+
+### Git y GitHub, y APIs
+
+Ambas rutas tienen la misma forma que las anteriores (3 niveles de 4 módulos, con un mini examen por nivel) y cada
+una trae su propio laboratorio simulado:
+
+- `git-lab.js` mantiene un repositorio en memoria: área de trabajo, área de preparación, commits encadenados, ramas,
+  archivos ignorados y remoto. Entiende `init`, `status`, `add`, `commit`, `log`, `diff`, `restore`, `branch`,
+  `switch`, `checkout`, `merge`, `remote` y `push`, y responde con mensajes equivalentes a los de Git en español.
+  No ejecuta Git, no toca el disco y no se conecta a GitHub; un comando fuera de esa lista lo dice en lugar de
+  inventar una salida. Cada módulo define la carpeta con la que empieza el laboratorio.
+- `api-lab.js` simula un servidor HTTP con dos colecciones (`/cursos` y `/estudiantes`). Acepta GET, POST, PUT, PATCH
+  y DELETE, cabeceras, cuerpos JSON, filtros, búsqueda, orden y paginación, y devuelve códigos reales: 200, 201, 204,
+  400, 401, 404, 405 y 415. Se escriben varias peticiones en un mismo intento y se ejecutan en orden sobre los mismos
+  datos, que se reinician en cada ejecución. No usa `fetch` ni sale a la red.
+
+Las validaciones de estos módulos revisan el estado real del repositorio o las respuestas del servidor, no el texto
+escrito, así que aceptan cualquier camino que llegue al mismo resultado.
+
 Pruebas adicionales: `node learning-state.test.mjs`, `node review-preview.test.mjs`,
+`node routes-git-apis.test.mjs`,
 `node python-runtime.test.mjs` y `node python-checkpoints.test.mjs`. Las dos últimas comparan el intérprete y las
 veinte soluciones de referencia con CPython cuando está disponible.
 

@@ -328,7 +328,7 @@ console.log(`HTML/CSS, JavaScript y SQL: ${examCount} mini exámenes, ${question
 
 // Verifica también el marcado real: un doble de DOM por sí solo no detecta IDs o scripts faltantes.
 const assetVersions = new Map();
-for (const page of ["index.html", "python.html", "html-css.html", "javascript.html", "sql.html"]) {
+for (const page of ["index.html", "python.html", "html-css.html", "javascript.html", "sql.html", "git.html", "apis.html"]) {
   const html = fs.readFileSync(new URL(`./${page}`, import.meta.url), "utf8");
   const ids = [...html.matchAll(/\bid="([^"]+)"/g)].map((match) => match[1]);
   assert.equal(new Set(ids).size, ids.length, `${page}: no debe repetir IDs`);
@@ -341,7 +341,7 @@ for (const page of ["index.html", "python.html", "html-css.html", "javascript.ht
     if (assetVersions.has(file)) assert.equal(assetVersions.get(file), ref, `${file}: versión consistente entre páginas`);
     assetVersions.set(file, ref);
   }
-  if (!["html-css.html", "javascript.html", "sql.html"].includes(page)) continue;
+  if (!["html-css.html", "javascript.html", "sql.html", "git.html", "apis.html"].includes(page)) continue;
   for (const match of courseSource.matchAll(/document\.querySelector\("#([^"]+)"\)/g)) {
     assert.ok(ids.includes(match[1]), `${page}: falta #${match[1]}`);
   }
@@ -351,4 +351,4 @@ for (const page of ["index.html", "python.html", "html-css.html", "javascript.ht
 }
 const css = fs.readFileSync(new URL("./styles.css", import.meta.url), "utf8");
 assert.match(css, /\.code-input\.starter-code-input\s*\{[^}]*display:\s*block;[^}]*grid-template-columns:\s*none;/, "se conserva el arreglo de ancho de los editores");
-console.log("5 páginas: IDs, archivos, versiones, orden de carga y editor: OK");
+console.log("7 páginas: IDs, archivos, versiones, orden de carga y editor: OK");

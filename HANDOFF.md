@@ -64,12 +64,32 @@ La fidelidad se comprueba contra CPython 3.12: `python-runtime.test.mjs` guarda 
 vuelve a comparar en vivo si el equipo tiene Python; `python-checkpoints.test.mjs` hace lo mismo con las 20 soluciones
 de referencia de los proyectos. Si se agrega contenido nuevo, conviene ampliar esas listas antes que ajustar el motor.
 
+
+### Rutas de Git y APIs del 4 de septiembre de 2026
+
+Las dos tarjetas que estaban como «Próximamente» ya son rutas completas de 12 módulos, con la misma estructura de
+niveles, puntos de control y exámenes que las demás. Se conectan al motor existente por el mismo punto que SQL:
+`COURSES` en `starter-course.js` recibe `git: globalThis.GitCourse` y `apis: globalThis.ApisCourse`, y `runModule`
+suma dos ramas para los tipos `git` y `api`.
+
+- `git-lab.js`: repositorio simulado con área de trabajo, preparación, commits, ramas, ignorados y remoto.
+  Cada módulo declara en `scenario` la carpeta inicial (archivos, commits previos, rama activa).
+- `api-lab.js`: servidor HTTP simulado con `/cursos` y `/estudiantes`, autenticación por token, validaciones y
+  paginación. Ejecuta varias peticiones por intento y reinicia los datos en cada ejecución.
+
+Ninguno de los dos usa `eval`, `Function`, `fetch` ni red; hay una prueba que lo verifica sobre el texto de los
+archivos. Cuando el estudiante pide algo fuera del alcance, ambos lo dicen explícitamente en vez de simular.
+
+El token del laboratorio de APIs es `clave-demo-2026` y aparece en las pistas de los módulos: es parte del ejercicio,
+no una credencial real.
+
 ### Verificación y próximos pasos
 
-Ejecutar las siete suites antes de publicar nuevos cambios:
+Ejecutar las ocho suites antes de publicar nuevos cambios:
 
 ```powershell
 node starter-course.test.mjs
+node routes-git-apis.test.mjs
 node python-runtime.test.mjs
 node python-checkpoints.test.mjs
 node sql-guide.test.mjs

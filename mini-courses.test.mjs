@@ -251,7 +251,7 @@ assert.equal(setup("typescript").get("progress").textContent, "0 de 3 mini proye
 
 // Contratos del HTML, orden de scripts, versiones, enlaces y mantenimiento.
 const home = read("index.html");
-const allPages = ["index", "python", "html-css", "javascript", "sql", ...ids];
+const allPages = ["index", "python", "html-css", "javascript", "sql", "git", "apis", ...ids];
 const versionByAsset = new Map();
 for (const name of allPages) {
   const html = read(name + ".html");
@@ -286,4 +286,4 @@ assert.match(read("mini-course.css"), /@media \(max-width: 600px\)/);
 assert.doesNotMatch(ui, /\.innerHTML|eval\(|new Function/);
 console.log("4 mini cursos, 12 proyectos, 36 comprobaciones y " + count + " combinaciones: OK");
 console.log("Node: código contrastado; UI: progreso, borradores, pistas, copia, contador, guardado bloqueado y aislamiento: OK");
-console.log("9 páginas: enlaces, versiones, editor ancho, tema y mantenimiento: OK");
+console.log("11 páginas: enlaces, versiones, editor ancho, tema y mantenimiento: OK");

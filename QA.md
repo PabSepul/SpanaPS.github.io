@@ -2,13 +2,13 @@
 
 ## Alcance
 
-Ocho rutas, portada, continuidad local, ejercicios guiados y mantenimiento con vista previa por enlace.
+Diez rutas, portada, continuidad local, ejercicios guiados y mantenimiento con vista previa por enlace.
 El usuario autorizó publicar esta versión en GitHub Pages manteniendo cerrado el acceso general.
 El enlace de revisión no autentica ni protege información privada.
 
 ## Pruebas automáticas
 
-Las siete suites pasan:
+Las ocho suites pasan:
 
 - `starter-course.test.mjs`: 36 módulos, 108 validaciones y 9 exámenes / 45 preguntas;
   desbloqueos, reintentos, progreso, marcado y recursos de las páginas.
@@ -20,7 +20,11 @@ Las siete suites pasan:
 - `sql-guide.test.mjs`: 12 lecciones, 12 ejemplos, 3 desafíos, tablas y aislamiento entre editores.
 - `mini-courses.test.mjs`: 12 proyectos, 36 comprobaciones, 100 combinaciones;
   24 resultados contrastados con CPython y plantillas Node contrastadas con dobles de archivos/HTTP.
-- `learning-state.test.mjs`: las 8 rutas, borradores, reanudación, progreso anterior,
+- `routes-git-apis.test.mjs`: 2 rutas nuevas, 24 módulos resueltos con soluciones de referencia,
+  72 validaciones, 6 exámenes / 30 preguntas y el comportamiento de los dos laboratorios
+  (repositorio sin init, comando inexistente, archivo ignorado, commit vacío; y 200, 404, 405,
+  401, 400 y 204 en la API, además del reinicio de datos entre ejecuciones).
+- `learning-state.test.mjs`: las 10 rutas, borradores, reanudación, progreso anterior,
   exámenes pendientes, cuota agotada, datos corruptos y actualización del catálogo.
 - `review-preview.test.mjs`: las 9 páginas, ambos dominios, entrada/salida, prioridad del mantenimiento,
   sesión, enlace incorrecto, almacenamiento bloqueado y noindex. El HTML comienza en mantenimiento.

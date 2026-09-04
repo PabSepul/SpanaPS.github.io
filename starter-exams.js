@@ -3,6 +3,76 @@
 
   // Contenido local de repaso; no es una certificación ni una evaluación remota.
   const LEVEL_EXAMS = {
+    git: [
+      {
+        levelId: 1, title: "Mini examen de repositorio y commits", passing: 4,
+        intro: "Repasa qué hace cada paso del ciclo básico de Git. Necesitas cuatro aciertos de cinco.",
+        questions: [
+          { question: "¿Qué crea git init?", options: ["Una copia en GitHub", "El repositorio local, con la carpeta .git", "Un archivo .gitignore", "El primer commit"], answer: 1, explanation: "git init crea el repositorio en tu computador. Publicarlo en GitHub es un paso posterior y distinto." },
+          { question: "¿Para qué sirve el área de preparación?", options: ["Para borrar archivos", "Para elegir qué cambios entran en el próximo commit", "Para subir al remoto", "Para crear ramas"], answer: 1, explanation: "git add coloca cambios en el área de preparación; solo eso entra en el commit siguiente." },
+          { question: "Si modificas un archivo y haces commit sin git add, ¿qué ocurre?", options: ["Se guarda igual", "Git avisa que no hay nada preparado", "Se borra el cambio", "Se crea una rama"], answer: 1, explanation: "El commit solo guarda lo preparado. Sin git add no hay nada que confirmar." },
+          { question: "¿Qué debe describir el mensaje de un commit?", options: ["El nombre del archivo", "El cambio que se hizo y por qué", "La fecha", "El nombre de la rama"], answer: 1, explanation: "El mensaje lo lee tu equipo (y tu yo futuro): describe el cambio, no el archivo." },
+          { question: "¿Qué muestra git log --oneline?", options: ["Los archivos sin seguimiento", "Una línea por commit con su identificador y mensaje", "Las diferencias del último cambio", "Las ramas del repositorio"], answer: 1, explanation: "--oneline resume cada commit en una línea: identificador corto y mensaje." }
+        ]
+      },
+      {
+        levelId: 2, title: "Mini examen de correcciones", passing: 4,
+        intro: "Comprueba cómo deshacer con seguridad y qué queda fuera del repositorio. Necesitas cuatro aciertos.",
+        questions: [
+          { question: "¿Qué hace git restore archivo.txt?", options: ["Lo borra del proyecto", "Devuelve el archivo a su última versión confirmada", "Lo saca del área de preparación", "Crea un commit nuevo"], answer: 1, explanation: "Sin --staged, git restore descarta los cambios locales y recupera la versión del último commit." },
+          { question: "¿Y git restore --staged archivo.txt?", options: ["Descarta lo escrito", "Lo saca del área de preparación sin perder los cambios", "Lo sube al remoto", "Lo agrega al commit"], answer: 1, explanation: "--staged solo deshace el git add: el archivo conserva lo que escribiste." },
+          { question: "¿Qué pasa con un archivo listado en .gitignore?", options: ["Se sube igual", "Git deja de mostrarlo y no lo versiona", "Se borra del disco", "Se convierte en rama"], answer: 1, explanation: "Los archivos ignorados no aparecen en git status ni entran con git add ." },
+          { question: "¿Qué muestra git diff?", options: ["El historial completo", "Las diferencias entre tu archivo actual y el último commit", "Las ramas existentes", "Los remotos configurados"], answer: 1, explanation: "git diff compara el área de trabajo con lo último guardado, línea por línea." },
+          { question: "¿Qué indica HEAD -> main en el historial?", options: ["Que falta hacer push", "Que estás parado en ese commit de la rama main", "Que el commit tiene errores", "Que la rama está protegida"], answer: 1, explanation: "HEAD señala tu posición actual; la flecha indica en qué rama estás trabajando." }
+        ]
+      },
+      {
+        levelId: 3, title: "Mini examen de ramas y GitHub", passing: 4,
+        intro: "Últimas cinco preguntas sobre trabajo paralelo y publicación. Necesitas cuatro aciertos.",
+        questions: [
+          { question: "¿Para qué sirve una rama?", options: ["Para respaldar archivos", "Para trabajar en paralelo sin tocar la versión principal", "Para borrar el historial", "Para conectar con GitHub"], answer: 1, explanation: "Una rama es una línea de trabajo independiente que después puedes unir." },
+          { question: "¿Qué hace git switch -c mejora?", options: ["Borra la rama mejora", "Crea la rama mejora y te cambia a ella", "Une mejora con main", "Publica la rama"], answer: 1, explanation: "La opción -c crea la rama y te sitúa en ella en un solo comando." },
+          { question: "Antes de unir una rama con git merge, ¿dónde debes estar?", options: ["En la rama que aporta los cambios", "En la rama que recibirá los cambios", "En cualquiera", "Sin ramas activas"], answer: 1, explanation: "git merge trae los cambios hacia la rama actual, así que primero te cambias a la que recibe." },
+          { question: "¿Qué configura git remote add origin <url>?", options: ["Sube los commits", "Guarda la dirección del repositorio remoto con el apodo origin", "Crea el repositorio en GitHub", "Descarga los cambios"], answer: 1, explanation: "remote add solo registra la dirección; enviar los commits es trabajo de git push." },
+          { question: "¿Qué agrega la opción -u en git push -u origin main?", options: ["Fuerza el envío", "Deja recordada la relación entre tu rama y la del remoto", "Crea un commit", "Borra la rama anterior"], answer: 1, explanation: "Con -u las próximas veces basta escribir git push, sin repetir remoto ni rama." }
+        ]
+      }
+    ],
+    apis: [
+      {
+        levelId: 1, title: "Mini examen de peticiones", passing: 4,
+        intro: "Repasa rutas, parámetros y códigos de estado. Necesitas cuatro aciertos de cinco.",
+        questions: [
+          { question: "¿Qué método se usa para pedir datos sin modificarlos?", options: ["POST", "GET", "DELETE", "PATCH"], answer: 1, explanation: "GET solo lee. Los métodos que escriben son POST, PUT, PATCH y DELETE." },
+          { question: "¿Qué diferencia hay entre /cursos y /cursos/3?", options: ["Ninguna", "La primera es la colección y la segunda un recurso concreto", "La segunda no existe", "La segunda es un parámetro"], answer: 1, explanation: "La colección devuelve una lista; el recurso identificado devuelve un solo objeto." },
+          { question: "En /cursos?nivel=Inicial&categoria=Web, ¿qué hace el símbolo &?", options: ["Cierra la ruta", "Separa un parámetro del siguiente", "Ordena los resultados", "Indica autenticación"], answer: 1, explanation: "? abre la lista de parámetros y & separa cada par clave=valor." },
+          { question: "¿Qué significa el código 200?", options: ["El recurso no existe", "La petición se resolvió correctamente", "Falta autenticación", "El servidor falló"], answer: 1, explanation: "Los códigos 2xx indican éxito; 200 OK es la respuesta habitual de un GET." },
+          { question: "¿Qué significa 404?", options: ["Error del servidor", "El recurso o la ruta no existen", "Falta el token", "Los datos son inválidos"], answer: 1, explanation: "404 Not Found es un error del cliente: se pidió algo que no está en el servidor." }
+        ]
+      },
+      {
+        levelId: 2, title: "Mini examen de escritura", passing: 4,
+        intro: "Comprueba cómo crear, corregir y eliminar recursos. Necesitas cuatro aciertos.",
+        questions: [
+          { question: "¿Qué código devuelve una creación exitosa con POST?", options: ["200", "201", "204", "400"], answer: 1, explanation: "201 Created confirma que el recurso se creó e incluye el objeto con su id nuevo." },
+          { question: "¿Dónde se escribe el cuerpo JSON de una petición?", options: ["En la ruta", "Después de una línea en blanco, bajo las cabeceras", "Dentro de la cabecera Authorization", "Antes del método"], answer: 1, explanation: "Las cabeceras van primero; una línea en blanco las separa del cuerpo." },
+          { question: "¿Qué indica el código 400?", options: ["Que el servidor se cayó", "Que la petición tiene datos inválidos o incompletos", "Que falta el token", "Que el recurso fue borrado"], answer: 1, explanation: "400 Bad Request señala un problema en lo que enviaste; el cuerpo explica qué corregir." },
+          { question: "¿Qué hace PATCH frente a PUT?", options: ["Borra el recurso", "Actualiza solo los campos enviados", "Crea uno nuevo", "Lee el recurso"], answer: 1, explanation: "PATCH modifica parcialmente; PUT espera el recurso completo." },
+          { question: "¿Por qué un DELETE exitoso responde 204?", options: ["Porque falló", "Porque la operación funcionó y no hay contenido que devolver", "Porque falta autenticación", "Porque el recurso se movió"], answer: 1, explanation: "204 No Content significa éxito sin cuerpo: el recurso ya no existe." }
+        ]
+      },
+      {
+        levelId: 3, title: "Mini examen de APIs en producción", passing: 4,
+        intro: "Últimas cinco preguntas sobre autenticación, paginación y consultas. Necesitas cuatro aciertos.",
+        questions: [
+          { question: "¿Qué significa el código 401?", options: ["El recurso no existe", "Falta la credencial o no es válida", "El dato es incorrecto", "El método no está permitido"], answer: 1, explanation: "401 Unauthorized: el recurso puede existir, pero no acreditaste permiso para operarlo." },
+          { question: "¿Dónde viaja el token de acceso?", options: ["En la ruta", "En la cabecera Authorization", "En el nombre del archivo", "En el cuerpo obligatoriamente"], answer: 1, explanation: "Se envía como Authorization: Bearer <token> en cada petición que lo necesite." },
+          { question: "¿Para qué sirve la paginación?", options: ["Para ordenar alfabéticamente", "Para pedir la colección por partes en lugar de completa", "Para autenticar", "Para borrar registros antiguos"], answer: 1, explanation: "Con pagina y tamano se piden bloques manejables de una colección grande." },
+          { question: "En orden=-inscritos, ¿qué hace el guion?", options: ["Filtra los negativos", "Invierte el orden, de mayor a menor", "Excluye ese campo", "Es un error de sintaxis"], answer: 1, explanation: "El guion delante del campo indica orden descendente." },
+          { question: "¿Por qué conviene comprobar con un GET después de escribir?", options: ["Porque el servidor lo exige", "Para confirmar que el cambio quedó guardado como esperabas", "Para borrar la caché", "Para renovar el token"], answer: 1, explanation: "Verificar el estado final evita asumir que una escritura funcionó cuando no fue así." }
+        ]
+      }
+    ],
     "html-css": [
       {
         levelId: 1, title: "Mini examen de estructura HTML", passing: 4,

@@ -3,7 +3,7 @@ import fs from 'node:fs';
 import vm from 'node:vm';
 const read = (file) => fs.readFileSync(new URL(file, import.meta.url),'utf8');
 const preview = read('review-preview.js');
-const pages = ['index','python','html-css','javascript','sql','nodejs','datos-python','react','typescript'];
+const pages = ['index','python','html-css','javascript','sql','git','apis','nodejs','datos-python','react','typescript'];
 function open(page, hostname, search, saved = new Map(), blocked = false) {
   const classes = new Set(['is-maintenance']);
   const metas = [];
@@ -41,4 +41,4 @@ for (const page of pages) {
   assert.equal(open(page,'localhost','').classes.has('is-maintenance'),false);
   assert.equal(open(page,'localhost','?maintenance').classes.has('is-maintenance'),true);
 }
-console.log('Mantenimiento: 9 páginas, ambos dominios, entrada/salida de revisión, sesión, enlace erróneo, guardado bloqueado y noindex: OK');
+console.log('Mantenimiento: 11 páginas, ambos dominios, entrada/salida de revisión, sesión, enlace erróneo, guardado bloqueado y noindex: OK');
