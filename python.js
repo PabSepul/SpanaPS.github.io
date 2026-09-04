@@ -1,5 +1,15 @@
 const PROGRESS_KEY = "codigo-cero.python-v2.completed";
 
+const EXAMS_KEY = "codigo-cero.python-v2.exams";
+
+const clean = (source) => String(source).replace(/#.*$/gm, "");
+const uses = (source, pattern) => pattern.test(clean(source));
+const shows = (result, text) => result.output.some((line) => line.includes(String(text)));
+const near = (value, expected) => typeof value === "number" && Math.abs(value - expected) < 0.001;
+const isList = (value) => Array.isArray(value);
+const sameList = (value, expected) => isList(value) && value.length === expected.length
+  && value.every((item, index) => item === expected[index]);
+
 const COURSE_LEVELS = [
   {
     id: 1,
@@ -7,7 +17,7 @@ const COURSE_LEVELS = [
     description: "Mensajes, variables y operaciones",
     stage: "Conceptos básicos",
     completionTitle: "Finalizaste los conceptos básicos de Python.",
-    completionCopy: "Completaste los cuatro proyectos del nivel. Rinde el mini examen para comprobar lo aprendido; la aplicación de fundamentos ya está disponible.",
+    completionCopy: "Ya sabes mostrar información, guardar datos y calcular con ellos. Rinde el mini examen del nivel; las decisiones y ciclos quedaron disponibles.",
     approvedCopy: "Aprobaste el mini examen de conceptos básicos. Puedes repetirlo cuando quieras para repasar.",
     projects: [
       {
@@ -21,22 +31,22 @@ const COURSE_LEVELS = [
         example: 'print("Hola, Python")',
         explanation: "print() es una función incorporada. El texto entre comillas es el valor que queremos mostrar en la consola.",
         concepts: ["Llamar una función", "Escribir texto entre comillas", "Leer la salida de un programa"],
-        goal: "Escribe un mensaje propio, ejecuta el código y comprueba que aparezca en la consola.",
+        goal: "Escribe un mensaje propio, ejecútalo y comprueba que aparezca en la consola.",
         starter: 'print("Estoy aprendiendo Python")',
         hints: [
           "Conserva la palabra print y los paréntesis.",
           "El mensaje debe quedar entre comillas dobles o simples.",
-          'Una solución válida se parece a print("Mi primer programa").',
+          'Una solución válida se parece a print("Mi primer programa").'
         ],
         checks: ["Usas print()", "El programa muestra un mensaje", "El mensaje contiene texto"],
         success: "Ya sabes ejecutar una instrucción y leer su resultado.",
         validate(result, source) {
           return [
-            /print\s*\(/.test(source),
+            uses(source, /print\s*\(/),
             result.output.length > 0,
-            result.output.some((line) => line.trim().length >= 3),
+            result.output.some((line) => line.trim().length >= 3)
           ];
-        },
+        }
       },
       {
         id: 2,
@@ -49,25 +59,25 @@ const COURSE_LEVELS = [
         example: 'nombre = "Ada"',
         explanation: "El signo igual guarda el valor de la derecha dentro del nombre de la izquierda. Una f-string combina variables y texto.",
         concepts: ["Variables de texto y número", "Asignación con =", "Texto con formato usando f"],
-        goal: "Cambia el nombre y la edad, y muestra ambos valores en una frase.",
+        goal: "Cambia el nombre y la edad por los tuyos, y muestra ambos valores dentro de una sola frase.",
         starter: 'nombre = "Ada"\nedad = 28\nprint(f"Soy {nombre} y tengo {edad} años")',
         hints: [
           "Guarda el nombre entre comillas y la edad como un número.",
           "Dentro de una f-string puedes escribir {nombre} y {edad}.",
-          'Comprueba que la última línea comience con print(f".',
+          'Comprueba que la última línea comience con print(f".'
         ],
         checks: ["Creas nombre y edad", "Usas una f-string", "La salida muestra ambos datos"],
         success: "Combinaste variables de distintos tipos dentro de una frase.",
         validate(result, source) {
-          const hasData = Object.prototype.hasOwnProperty.call(result.environment, "nombre")
-            && Object.prototype.hasOwnProperty.call(result.environment, "edad");
+          const nombre = result.environment.nombre;
+          const edad = result.environment.edad;
+          const tieneDatos = typeof nombre === "string" && typeof edad === "number";
           return [
-            hasData,
-            /print\s*\(\s*f["']/.test(source),
-            hasData && result.output.some((line) => line.includes(String(result.environment.nombre))
-              && line.includes(String(result.environment.edad))),
+            tieneDatos,
+            uses(source, /print\s*\(\s*f["']/),
+            tieneDatos && result.output.some((line) => line.includes(nombre) && line.includes(String(edad)))
           ];
-        },
+        }
       },
       {
         id: 3,
@@ -76,30 +86,28 @@ const COURSE_LEVELS = [
         duration: "15 min",
         difficulty: "Operaciones",
         file: "proyecto_03.py",
-        summary: "Python puede combinar variables y operadores para transformar datos y producir un resultado nuevo.",
-        example: "total = cuenta + propina",
+        summary: "Python combina variables y operadores para transformar datos y producir un resultado nuevo.",
+        example: "propina = cuenta * porcentaje / 100",
         explanation: "Las operaciones se evalúan antes de guardar el resultado. Separarlas en pasos hace que el cálculo sea fácil de leer y comprobar.",
         concepts: ["Multiplicar y dividir", "Reutilizar resultados", "Construir un cálculo por pasos"],
-        goal: "Calcula la propina y el total de una cuenta utilizando el porcentaje indicado.",
-        starter: 'cuenta = 20000\nporcentaje = 10\npropina = cuenta * porcentaje\npropina = propina / 100\ntotal = cuenta + propina\nprint(f"Propina: {propina}")\nprint(f"Total: {total}")',
+        goal: "Calcula la propina y el total de la cuenta usando el porcentaje indicado, y muestra ambos valores.",
+        starter: 'cuenta = 20000\nporcentaje = 10\npropina = cuenta * porcentaje\ntotal = cuenta\nprint(f"Propina: {propina}")\nprint(f"Total: {total}")',
         hints: [
-          "Primero multiplica la cuenta por el porcentaje.",
-          "Divide ese resultado por 100 para obtener la propina real.",
-          "El total se obtiene sumando cuenta + propina.",
+          "La propina es cuenta * porcentaje / 100.",
+          "El total suma la cuenta y la propina.",
+          "Con cuenta 20000 y 10 %, la propina es 2000.0 y el total 22000.0."
         ],
         checks: ["Calculas la propina", "Calculas el total", "Muestras ambos resultados"],
         success: "Convertiste una fórmula cotidiana en instrucciones de Python.",
         validate(result) {
-          const env = result.environment;
-          const expectedTip = Number(env.cuenta) * Number(env.porcentaje) / 100;
-          const expectedTotal = Number(env.cuenta) + expectedTip;
+          const { cuenta, porcentaje, propina, total } = result.environment;
+          const esperada = Number(cuenta) * Number(porcentaje) / 100;
           return [
-            Number.isFinite(env.propina) && Math.abs(env.propina - expectedTip) < 0.001,
-            Number.isFinite(env.total) && Math.abs(env.total - expectedTotal) < 0.001,
-            result.output.some((line) => line.includes(String(env.propina)))
-              && result.output.some((line) => line.includes(String(env.total))),
+            near(propina, esperada),
+            near(total, Number(cuenta) + esperada),
+            near(propina, esperada) && shows(result, propina) && shows(result, total)
           ];
-        },
+        }
       },
       {
         id: 4,
@@ -112,289 +120,533 @@ const COURSE_LEVELS = [
         example: "135 // 60  →  2",
         explanation: "// devuelve horas completas y % devuelve los minutos que sobran. Juntos permiten expresar una duración con claridad.",
         concepts: ["División entera //", "Resto con %", "Combinar resultados"],
-        goal: "Cambia la cantidad de minutos y muestra su equivalente en horas y minutos.",
-        starter: 'minutos = 135\nhoras = minutos // 60\nresto = minutos % 60\nprint(f"{horas} h y {resto} min")',
+        goal: "Calcula cuántas horas completas y cuántos minutos sobran, y muéstralo en una sola línea.",
+        starter: 'minutos = 135\nhoras = minutos\nresto = minutos\nprint(f"{horas} h y {resto} min")',
         hints: [
-          "Divide minutos // 60 para obtener horas completas.",
-          "Usa minutos % 60 para calcular lo que sobra.",
-          "Muestra horas y resto dentro de una f-string.",
+          "Usa minutos // 60 para las horas completas.",
+          "Usa minutos % 60 para lo que sobra.",
+          "Con 135 minutos el resultado es 2 h y 15 min."
         ],
         checks: ["Calculas horas completas", "Calculas los minutos restantes", "Muestras la conversión"],
         success: "Usaste dos operadores para resolver un problema de tiempo.",
         validate(result, source) {
-          const env = result.environment;
+          const { minutos, horas, resto } = result.environment;
+          const validos = typeof minutos === "number";
           return [
-            Number.isFinite(env.minutos) && env.horas === Math.floor(env.minutos / 60) && source.includes("//"),
-            Number.isFinite(env.minutos) && env.resto === env.minutos % 60 && source.includes("%"),
-            result.output.some((line) => line.includes(String(env.horas)) && line.includes(String(env.resto))),
+            validos && horas === Math.floor(minutos / 60) && uses(source, /\/\//),
+            validos && resto === minutos % 60 && uses(source, /%/),
+            validos && result.output.some((line) => line.includes(String(horas)) && line.includes(String(resto)))
           ];
-        },
-      },
-    ],
+        }
+      }
+    ]
   },
   {
     id: 2,
     title: "Decisiones y ciclos",
     description: "Condiciones, repeticiones y listas",
-    stage: "Aplicación de fundamentos",
-    completionTitle: "Finalizaste la aplicación de fundamentos de Python.",
-    completionCopy: "Practicaste decisiones, ciclos y listas. Rinde el mini examen del nivel; la integración de fundamentos ya está disponible.",
-    approvedCopy: "Aprobaste el mini examen de aplicación de fundamentos. Puedes repetirlo cuando quieras para repasar.",
+    stage: "Decisiones y ciclos",
+    completionTitle: "Finalizaste las decisiones y ciclos de Python.",
+    completionCopy: "Tus programas ya eligen caminos y repiten trabajo. Rinde el mini examen del nivel; las colecciones de datos quedaron disponibles.",
+    approvedCopy: "Aprobaste el mini examen de decisiones y ciclos. Puedes repetirlo cuando quieras para repasar.",
     projects: [
       {
         id: 5,
         title: "Decide según una edad",
         shortTitle: "Mayoría de edad",
-        duration: "16 min",
-        difficulty: "Condiciones",
+        duration: "12 min",
+        difficulty: "Decisiones",
         file: "proyecto_05.py",
-        summary: "Una condición permite que el programa elija qué camino seguir según el valor de una expresión.",
+        summary: "Una condición compara valores y ejecuta un camino distinto según el resultado.",
         example: "if edad >= 18:",
-        explanation: "if comprueba una condición. Si es verdadera ejecuta el primer bloque; else define qué sucede en cualquier otro caso.",
-        concepts: ["Comparar con >=", "Crear bloques con sangría", "Elegir entre dos resultados"],
-        goal: "Cambia la edad y consigue que el programa indique correctamente si la persona es mayor o menor de edad.",
-        starter: 'edad = 17\nif edad >= 18:\n    print("Mayor de edad")\nelse:\n    print("Menor de edad")',
+        explanation: "if evalúa una comparación. Si resulta falsa, el bloque else entrega la respuesta alternativa.",
+        concepts: ["Comparar con >=", "Bloques con sangría", "El camino alternativo con else"],
+        goal: "Deja la edad en 20 y muestra un mensaje que incluya la edad y la palabra “mayor”.",
+        starter: 'edad = 16\nif edad >= 18:\n    print("Mayor de edad")\nelse:\n    print("Menor de edad")',
         hints: [
-          "La comparación debe quedar después de if y terminar con dos puntos.",
-          "Las líneas dentro de if y else necesitan cuatro espacios de sangría.",
-          "Usa edad >= 18 para representar la mayoría de edad.",
+          "Cambia el valor guardado en edad.",
+          "Dentro del if puedes usar una f-string: print(f\"Tienes {edad} años: mayor de edad\").",
+          "La sangría de cuatro espacios indica qué instrucciones pertenecen a cada camino."
         ],
-        checks: ["Creas una condición con if", "Incluyes una alternativa con else", "El resultado corresponde a la edad"],
-        success: "Tu programa ya puede elegir entre dos caminos.",
-        execute: runAgeDecision,
+        checks: ["Usas if y else", "La edad es 20", "El mensaje incluye la edad y la palabra mayor"],
+        success: "Tu programa ya elige entre dos caminos.",
         validate(result, source) {
-          const expected = result.environment.edad >= 18 ? "Mayor de edad" : "Menor de edad";
           return [
-            /if\s+edad\s*>=\s*18\s*:/.test(source),
-            /else\s*:/.test(source),
-            result.output.includes(expected) && /print\s*\(/.test(source),
+            uses(source, /\bif\b/) && uses(source, /\belse\b/),
+            result.environment.edad === 20,
+            result.output.some((line) => line.includes("20") && /mayor/i.test(line))
           ];
-        },
+        }
       },
       {
         id: 6,
         title: "Clasifica la temperatura",
         shortTitle: "Clasificador",
-        duration: "18 min",
-        difficulty: "Condiciones",
+        duration: "15 min",
+        difficulty: "Decisiones",
         file: "proyecto_06.py",
-        summary: "elif agrega alternativas intermedias cuando una decisión necesita más de dos resultados posibles.",
+        summary: "Cuando hay más de dos respuestas posibles, elif encadena condiciones en orden.",
         example: "elif temperatura < 25:",
-        explanation: "Python evalúa las condiciones de arriba hacia abajo y ejecuta solamente el primer bloque que resulte verdadero.",
-        concepts: ["Encadenar if, elif y else", "Ordenar condiciones", "Clasificar un valor numérico"],
-        goal: "Prueba diferentes temperaturas y clasifícalas como frío, agradable o calor.",
-        starter: 'temperatura = 22\nif temperatura < 10:\n    print("Hace frío")\nelif temperatura < 25:\n    print("Clima agradable")\nelse:\n    print("Hace calor")',
+        explanation: "Python revisa las condiciones de arriba hacia abajo y ejecuta solamente la primera que se cumple.",
+        concepts: ["Encadenar con elif", "El orden de las condiciones", "Cerrar con else"],
+        goal: "Completa las tres respuestas (frío, agradable y calor) y deja la temperatura en 30.",
+        starter: 'temperatura = 5\nif temperatura < 10:\n    print("Hace frío")\nelse:\n    print("Hace calor")',
         hints: [
-          "Comienza comprobando el rango más bajo.",
-          "elif temperatura < 25 cubre el rango intermedio.",
-          "else se encarga de cualquier temperatura restante.",
+          "Agrega un elif temperatura < 25 entre el if y el else.",
+          "El mensaje intermedio es “Clima agradable”.",
+          "Con temperatura 30 debe aparecer “Hace calor”."
         ],
-        checks: ["Usas if, elif y else", "Mantienes los límites 10 y 25", "La clasificación coincide con la temperatura"],
-        success: "Construiste una decisión con tres resultados posibles.",
-        execute: runTemperatureClassifier,
+        checks: ["Usas elif", "La temperatura es 30", "La salida es “Hace calor”"],
+        success: "Ya sabes encadenar decisiones en el orden correcto.",
         validate(result, source) {
-          const value = result.environment.temperatura;
-          const expected = value < 10 ? "Hace frío" : value < 25 ? "Clima agradable" : "Hace calor";
           return [
-            /if\s+temperatura/.test(source) && /elif\s+temperatura/.test(source) && /else\s*:/.test(source),
-            source.includes("< 10") && source.includes("< 25"),
-            result.output.includes(expected) && /print\s*\(/.test(source),
+            uses(source, /\belif\b/) && uses(source, /Clima agradable/),
+            result.environment.temperatura === 30,
+            result.output.length === 1 && result.output[0].includes("Hace calor")
           ];
-        },
+        }
       },
       {
         id: 7,
         title: "Construye un contador",
         shortTitle: "Contador",
-        duration: "16 min",
+        duration: "15 min",
         difficulty: "Ciclos",
         file: "proyecto_07.py",
-        summary: "Un ciclo for repite un bloque para cada valor producido por range().",
+        summary: "Un ciclo repite instrucciones sin escribirlas una y otra vez.",
         example: "for numero in range(1, 6):",
-        explanation: "range(1, 6) produce los números desde 1 hasta 5. El límite final no se incluye.",
-        concepts: ["Repetir con for", "Crear secuencias con range", "Usar una variable de iteración"],
-        goal: "Haz que el contador muestre cinco números consecutivos, comenzando desde 1.",
-        starter: "for numero in range(1, 6):\n    print(numero)",
+        explanation: "range(inicio, fin) recorre desde el inicio hasta el número anterior al fin. La variable del ciclo cambia en cada vuelta.",
+        concepts: ["Repetir con for", "Rangos con range()", "Usar la variable del ciclo"],
+        goal: "Muestra cinco líneas, de “Vuelta 1” a “Vuelta 5”.",
+        starter: 'for numero in range(1, 3):\n    print(numero)',
         hints: [
-          "range necesita un inicio y un límite final.",
-          "Para obtener del 1 al 5, el límite final debe ser 6.",
-          "print(numero) debe estar dentro del ciclo y llevar sangría.",
+          "range(1, 6) recorre 1, 2, 3, 4 y 5.",
+          "Dentro del ciclo usa una f-string con la variable.",
+          'La primera línea debe decir exactamente "Vuelta 1".'
         ],
-        checks: ["Usas un ciclo for", "Generas cinco valores con range", "Muestras los números del 1 al 5"],
-        success: "Automatizaste una tarea repetitiva con un ciclo.",
-        execute: runRangeLoop,
+        checks: ["Usas for con range()", "Muestras cinco líneas", "Las líneas van de Vuelta 1 a Vuelta 5"],
+        success: "Automatizaste una repetición con una sola instrucción.",
         validate(result, source) {
           return [
-            /for\s+\w+\s+in\s+range\s*\(/.test(source),
-            result.environment.values.length === 5,
-            result.output.join(",") === "1,2,3,4,5" && /print\s*\(\s*numero\s*\)/.test(source),
+            uses(source, /\bfor\b/) && uses(source, /range\s*\(/),
+            result.output.length === 5,
+            result.output.length === 5
+              && result.output[0].includes("Vuelta 1")
+              && result.output[4].includes("Vuelta 5")
           ];
-        },
+        }
       },
       {
         id: 8,
         title: "Recorre una lista de tareas",
         shortTitle: "Lista de tareas",
-        duration: "20 min",
-        difficulty: "Listas",
+        duration: "15 min",
+        difficulty: "Ciclos",
         file: "proyecto_08.py",
-        summary: "Una lista reúne varios valores en orden y un ciclo permite trabajar con cada elemento por separado.",
-        example: 'tareas = ["Leer", "Practicar"]',
-        explanation: "Los corchetes crean una lista. En cada vuelta del ciclo, la variable tarea recibe uno de sus elementos.",
-        concepts: ["Crear una lista", "Recorrer elementos", "Mostrar cada valor"],
-        goal: "Agrega al menos tres tareas y consigue que el programa muestre cada una en una línea.",
-        starter: 'tareas = ["Leer", "Practicar", "Crear"]\nfor tarea in tareas:\n    print(tarea)',
+        summary: "Una lista guarda varios valores en orden y un ciclo puede recorrerlos uno por uno.",
+        example: "for tarea in tareas:",
+        explanation: "Los corchetes crean la lista y for entrega cada elemento por turno. len() indica cuántos elementos contiene.",
+        concepts: ["Crear listas con corchetes", "Recorrer con for", "Contar con len()"],
+        goal: "Escribe al menos tres tareas, muestra cada una precedida por un guion y termina indicando cuántas hay.",
+        starter: 'tareas = ["Leer la lección"]\nfor tarea in tareas:\n    print(tarea)',
         hints: [
-          "Separa los textos de la lista con comas.",
-          "Usa for tarea in tareas para recorrerla.",
-          "La instrucción print(tarea) debe tener sangría.",
+          "Separa los elementos de la lista con comas.",
+          'Dentro del ciclo puedes escribir print("-", tarea).',
+          'Al final agrega print(f"Total: {len(tareas)} tareas").'
         ],
-        checks: ["Creas una lista con tres elementos", "Recorres la lista con for", "Muestras todas las tareas"],
-        success: "Guardaste y recorriste una colección completa.",
-        execute: runListLoop,
+        checks: ["La lista tiene al menos tres tareas", "Muestras cada tarea con un guion", "Indicas cuántas tareas hay"],
+        success: "Recorriste una colección completa con un solo ciclo.",
         validate(result, source) {
+          const tareas = result.environment.tareas;
+          const conGuion = result.output.filter((line) => line.trim().startsWith("-"));
           return [
-            result.environment.tareas.length >= 3,
-            /for\s+tarea\s+in\s+tareas\s*:/.test(source),
-            result.output.length === result.environment.tareas.length && /print\s*\(\s*tarea\s*\)/.test(source),
+            isList(tareas) && tareas.length >= 3,
+            isList(tareas) && conGuion.length >= tareas.length,
+            isList(tareas) && uses(source, /len\s*\(/) && shows(result, tareas.length)
           ];
-        },
-      },
-    ],
+        }
+      }
+    ]
   },
   {
     id: 3,
-    title: "Funciones y proyecto final",
-    description: "Código reutilizable y un desafío completo",
-    stage: "Integración de fundamentos",
-    completionTitle: "Finalizaste la integración de fundamentos de Python.",
-    completionCopy: "Terminaste los doce proyectos. Aprueba los tres mini exámenes para cerrar la ruta completa.",
-    approvedCopy: "Aprobaste el mini examen de integración. Revisa que también estén aprobados los otros dos para cerrar esta introducción a Python.",
+    title: "Colecciones de datos",
+    description: "Listas, orden, diccionarios e inventarios",
+    stage: "Colecciones de datos",
+    completionTitle: "Finalizaste las colecciones de datos de Python.",
+    completionCopy: "Ya guardas y consultas conjuntos de información. Rinde el mini examen del nivel; las funciones propias quedaron disponibles.",
+    approvedCopy: "Aprobaste el mini examen de colecciones de datos. Puedes repetirlo cuando quieras para repasar.",
     projects: [
       {
         id: 9,
-        title: "Crea una función para saludar",
-        shortTitle: "Función saludar",
-        duration: "18 min",
-        difficulty: "Funciones",
+        title: "Administra una lista de compras",
+        shortTitle: "Lista de compras",
+        duration: "15 min",
+        difficulty: "Listas",
         file: "proyecto_09.py",
-        summary: "Una función agrupa instrucciones bajo un nombre para poder utilizarlas cuantas veces sea necesario.",
-        example: "def saludar(nombre):",
-        explanation: "def crea la función, el parámetro recibe un dato y return entrega el resultado a quien llamó la función.",
-        concepts: ["Definir con def", "Recibir parámetros", "Devolver con return"],
-        goal: "Explora saludar(nombre): cambia Ada por otro nombre en la llamada y predice el saludo. Conserva la función del ejemplo.",
-        starter: 'def saludar(nombre):\n    return f"Hola, {nombre}"\n\nprint(saludar("Ada"))',
+        summary: "Las listas cambian con el tiempo: se les agregan y se les quitan elementos.",
+        example: 'compras.append("huevos")',
+        explanation: "append() agrega al final, remove() elimina la primera coincidencia y los corchetes leen una posición, empezando en cero.",
+        concepts: ["Agregar con append()", "Quitar con remove()", "Leer posiciones desde cero"],
+        goal: "Agrega “huevos”, quita “leche”, muestra la lista final y cuántos productos quedan.",
+        starter: 'compras = ["pan", "leche"]\nprint(compras)',
         hints: [
-          "La definición debe comenzar con def saludar(nombre):",
-          "Dentro de la función devuelve una f-string usando return.",
-          'Llama la función dentro de print, por ejemplo saludar("Ada").',
+          'Usa compras.append("huevos") para agregar al final.',
+          'Usa compras.remove("leche") para quitar ese producto.',
+          "Al final la lista debe ser ['pan', 'huevos'] y quedar 2 productos."
         ],
-        checks: ["Defines saludar(nombre)", "Devuelves un texto con return", "Llamas la función y muestras el saludo"],
-        success: "Creaste y utilizaste tu primera función.",
-        execute: runGreetingFunction,
+        checks: ["Agregas huevos con append()", "Quitas leche con remove()", "Muestras la lista final y su tamaño"],
+        success: "Modificaste una colección y comprobaste el resultado.",
         validate(result, source) {
+          const compras = result.environment.compras;
           return [
-            /def\s+saludar\s*\(\s*nombre\s*\)\s*:/.test(source),
-            /return\s+f?["']/.test(source),
-            result.output.some((line) => line.includes(result.environment.nombre)) && /print\s*\(/.test(source),
+            uses(source, /\.append\s*\(/) && isList(compras) && compras.includes("huevos"),
+            uses(source, /\.remove\s*\(/) && isList(compras) && !compras.includes("leche"),
+            sameList(compras, ["pan", "huevos"]) && shows(result, 2)
           ];
-        },
+        }
       },
       {
         id: 10,
-        title: "Calcula un precio final",
-        shortTitle: "Función descuento",
-        duration: "22 min",
-        difficulty: "Funciones",
+        title: "Ordena y resume números",
+        shortTitle: "Resumen de precios",
+        duration: "18 min",
+        difficulty: "Listas",
         file: "proyecto_10.py",
-        summary: "Los parámetros permiten reutilizar una misma fórmula con diferentes precios y porcentajes.",
-        example: "precio_final(25000, 15)",
-        explanation: "Una función puede recibir varios parámetros, realizar operaciones internas y devolver un único resultado.",
-        concepts: ["Usar dos parámetros", "Calcular dentro de una función", "Reutilizar una fórmula"],
-        goal: "Prueba precio_final con otro precio y porcentaje en la llamada. Comprueba la rebaja calculada conservando la función del ejemplo.",
-        starter: 'def precio_final(precio, descuento):\n    rebaja = precio * descuento\n    rebaja = rebaja / 100\n    return precio - rebaja\n\nprint(precio_final(25000, 15))',
+        summary: "Python trae funciones listas para ordenar y resumir una colección de números.",
+        example: "sorted(precios)",
+        explanation: "sorted() devuelve una lista nueva ordenada, min() y max() buscan los extremos y sum() acumula todos los valores.",
+        concepts: ["Ordenar con sorted()", "Extremos con min() y max()", "Promediar con sum() y len()"],
+        goal: "Muestra los precios ordenados, el más barato, el más caro y el promedio con dos decimales.",
+        starter: 'precios = [1200, 890, 2300, 450]\nprint(precios)',
         hints: [
-          "Multiplica precio por descuento para comenzar la rebaja.",
-          "Divide la rebaja por 100 antes de restarla.",
-          "La última línea de la función debe devolver precio - rebaja.",
+          "sorted(precios) entrega la lista ordenada sin modificar la original.",
+          "El promedio se obtiene con sum(precios) / len(precios).",
+          'Para dos decimales usa una f-string: f"{promedio:.2f}".'
         ],
-        checks: ["Defines dos parámetros", "Devuelves el precio menos la rebaja", "El resultado numérico es correcto"],
-        success: "Encapsulaste una fórmula reutilizable dentro de una función.",
-        execute: runDiscountFunction,
-        validate(result, source) {
+        checks: ["Muestras la lista ordenada", "Muestras el más barato y el más caro", "Muestras el promedio con dos decimales"],
+        success: "Resumiste una colección completa en pocas líneas.",
+        validate(result) {
           return [
-            /def\s+precio_final\s*\(\s*precio\s*,\s*descuento\s*\)\s*:/.test(source),
-            /return\s+precio\s*-\s*rebaja/.test(source),
-            Math.abs(Number(result.output[0]) - result.environment.expected) < 0.001 && /print\s*\(/.test(source),
+            shows(result, "[450, 890, 1200, 2300]"),
+            shows(result, 450) && shows(result, 2300),
+            shows(result, "1210.00")
           ];
-        },
+        }
       },
       {
         id: 11,
-        title: "Obtén un promedio",
-        shortTitle: "Promedio de notas",
-        duration: "20 min",
-        difficulty: "Datos",
+        title: "Guarda datos con diccionarios",
+        shortTitle: "Diccionarios",
+        duration: "18 min",
+        difficulty: "Diccionarios",
         file: "proyecto_11.py",
-        summary: "Las funciones sum() y len() permiten resumir una lista sin recorrerla manualmente.",
-        example: "promedio = sum(notas) / len(notas)",
-        explanation: "sum(notas) suma los valores y len(notas) cuenta cuántos existen. Dividir ambos resultados produce el promedio.",
-        concepts: ["Guardar números en listas", "Sumar con sum", "Contar con len"],
-        goal: "Agrega varias notas, calcula su promedio y muéstralo en la consola.",
-        starter: 'notas = [6.5, 5.8, 6.2]\npromedio = sum(notas) / len(notas)\nprint(f"Promedio: {promedio}")',
+        summary: "Un diccionario guarda pares de clave y valor, así cada dato tiene nombre propio.",
+        example: 'curso["nivel"] = "inicial"',
+        explanation: "Se consulta por clave con corchetes. get() evita el error cuando la clave no existe y permite entregar un valor por defecto.",
+        concepts: ["Pares clave y valor", "Agregar claves nuevas", "Consultar seguro con get()"],
+        goal: "Agrega la clave “nivel” con el valor “inicial”, muestra el diccionario completo y consulta con get() una clave que no exista mostrando “sin datos”.",
+        starter: 'curso = {"nombre": "Python", "horas": 12}\nprint(curso["nombre"])',
         hints: [
-          "Las notas deben ir dentro de corchetes y separadas por comas.",
-          "Usa sum(notas) para obtener el total.",
-          "Divide ese total por len(notas).",
+          'Para agregar una clave escribe curso["nivel"] = "inicial".',
+          "print(curso) muestra el diccionario completo.",
+          'curso.get("profesor", "sin datos") devuelve el valor por defecto.'
         ],
-        checks: ["Creas una lista de notas", "Utilizas sum() y len()", "El promedio mostrado es correcto"],
-        success: "Resumiste una colección de datos con funciones incorporadas.",
-        execute: runAverageProject,
+        checks: ["Agregas la clave nivel", "Muestras el diccionario completo", "Usas get() con un valor por defecto"],
+        success: "Ya organizas datos con nombre en lugar de posiciones.",
         validate(result, source) {
-          const shown = result.output.join(" ");
+          const curso = result.environment.curso;
+          const tieneNivel = curso && typeof curso === "object" && curso.nivel === "inicial";
           return [
-            result.environment.notas.length >= 3,
-            /sum\s*\(\s*notas\s*\)/.test(source) && /len\s*\(\s*notas\s*\)/.test(source),
-            shown.includes(String(result.environment.promedio)) && /print\s*\(/.test(source),
+            Boolean(tieneNivel),
+            result.output.some((line) => line.includes("'nombre'") && line.includes("'nivel'")),
+            uses(source, /\.get\s*\(/) && shows(result, "sin datos")
           ];
-        },
+        }
       },
       {
         id: 12,
-        title: "Recomienda una sesión de estudio",
+        title: "Recorre un inventario",
+        shortTitle: "Inventario",
+        duration: "20 min",
+        difficulty: "Diccionarios",
+        file: "proyecto_12.py",
+        summary: "items() entrega la clave y el valor de cada par, así puedes revisar todo el diccionario.",
+        example: "for producto, cantidad in stock.items():",
+        explanation: "El ciclo reparte cada par en dos variables. Dentro puedes decidir con condiciones y acumular un total.",
+        concepts: ["Recorrer con items()", "Repartir clave y valor", "Acumular dentro del ciclo"],
+        goal: "Muestra cada producto con su cantidad, avisa cuáles están agotados y termina mostrando el total de unidades.",
+        starter: 'stock = {"teclado": 3, "mouse": 0, "monitor": 5}\nfor producto in stock:\n    print(producto)',
+        hints: [
+          "Cambia el ciclo por for producto, cantidad in stock.items():.",
+          "Dentro usa if cantidad == 0 para avisar que está agotado.",
+          "Suma las cantidades en una variable total que empiece en 0; el resultado es 8."
+        ],
+        checks: ["Recorres el inventario con items()", "Avisas los productos agotados", "Muestras el total de unidades"],
+        success: "Recorriste un diccionario tomando decisiones por cada dato.",
+        validate(result, source) {
+          return [
+            uses(source, /\.items\s*\(\s*\)/),
+            result.output.some((line) => /agotad/i.test(line) && line.toLowerCase().includes("mouse")),
+            shows(result, 8)
+          ];
+        }
+      }
+    ]
+  },
+  {
+    id: 4,
+    title: "Funciones propias",
+    description: "Reutilizar lógica con parámetros y resultados",
+    stage: "Funciones propias",
+    completionTitle: "Finalizaste las funciones propias de Python.",
+    completionCopy: "Ya encapsulas lógica y la reutilizas. Rinde el mini examen del nivel; la integración final quedó disponible.",
+    approvedCopy: "Aprobaste el mini examen de funciones propias. Puedes repetirlo cuando quieras para repasar.",
+    projects: [
+      {
+        id: 13,
+        title: "Crea una función para saludar",
+        shortTitle: "Función saludar",
+        duration: "15 min",
+        difficulty: "Funciones",
+        file: "proyecto_13.py",
+        summary: "Una función agrupa instrucciones bajo un nombre para poder repetirlas cuando quieras.",
+        example: "def saludar(nombre):",
+        explanation: "def crea la función, el parámetro recibe el dato de cada llamada y return entrega el resultado a quien la llamó.",
+        concepts: ["Definir con def", "Recibir un parámetro", "Entregar con return"],
+        goal: "Completa saludar() para que devuelva “Hola, ” seguido del nombre, y pruébala con dos nombres distintos.",
+        starter: 'def saludar(nombre):\n    return nombre\n\nprint(saludar("Ada"))',
+        hints: [
+          'Dentro de la función escribe return "Hola, " + nombre.',
+          "También puedes usar una f-string: return f\"Hola, {nombre}\".",
+          "Llama la función dos veces con nombres distintos."
+        ],
+        checks: ["Defines la función saludar", "Devuelve el saludo con el nombre", "La pruebas con dos nombres distintos"],
+        success: "Encapsulaste una tarea y la reutilizaste sin repetir código.",
+        validate(result, source) {
+          const saludos = result.output.filter((line) => /^hola,\s*\S/i.test(line.trim()));
+          return [
+            uses(source, /def\s+saludar\s*\(\s*\w+\s*\)/),
+            saludos.length >= 1,
+            saludos.length >= 2 && new Set(saludos).size >= 2
+          ];
+        }
+      },
+      {
+        id: 14,
+        title: "Calcula un precio final",
+        shortTitle: "Función descuento",
+        duration: "18 min",
+        difficulty: "Funciones",
+        file: "proyecto_14.py",
+        summary: "Un parámetro con valor por defecto se usa cuando quien llama no envía ese dato.",
+        example: "def precio_final(precio, descuento=10):",
+        explanation: "Los parámetros con valor por defecto van al final. Así la función sirve para el caso común y para los casos especiales.",
+        concepts: ["Varios parámetros", "Valores por defecto", "Probar distintos casos"],
+        goal: "Haz que precio_final aplique el descuento en porcentaje y muestra el resultado para 1000 sin descuento indicado y para 1000 con 50 %.",
+        starter: 'def precio_final(precio, descuento):\n    return precio\n\nprint(precio_final(1000, 10))',
+        hints: [
+          "El precio con descuento es precio - precio * descuento / 100.",
+          "Escribe descuento=10 en la definición para darle un valor por defecto.",
+          "Los resultados esperados son 900.0 y 500.0."
+        ],
+        checks: ["El descuento tiene valor por defecto", "Muestras el precio con el descuento por defecto", "Muestras el precio con 50 % de descuento"],
+        success: "Tu función cubre el caso habitual y también las excepciones.",
+        validate(result, source) {
+          return [
+            uses(source, /def\s+precio_final\s*\([^)]*descuento\s*=\s*10/),
+            shows(result, "900"),
+            shows(result, "500")
+          ];
+        }
+      },
+      {
+        id: 15,
+        title: "Obtén un promedio",
+        shortTitle: "Promedio de notas",
+        duration: "18 min",
+        difficulty: "Funciones",
+        file: "proyecto_15.py",
+        summary: "Una función puede recibir una lista completa y devolver un único resultado.",
+        example: "def promedio(notas):",
+        explanation: "sum() suma los valores y len() cuenta cuántos hay. Dividir ambos entrega el promedio de cualquier lista.",
+        concepts: ["Recibir una lista", "Combinar sum() y len()", "Reutilizar con datos distintos"],
+        goal: "Escribe promedio(notas) y muestra con dos decimales el promedio de [4, 5, 6, 7] y el de [6, 7].",
+        starter: 'def promedio(notas):\n    return 0\n\nprint(promedio([4, 5, 6, 7]))',
+        hints: [
+          "Dentro de la función devuelve sum(notas) / len(notas).",
+          'Para dos decimales usa f"{promedio(notas):.2f}".',
+          "Los resultados esperados son 5.50 y 6.50."
+        ],
+        checks: ["Defines la función promedio", "Muestras 5.50 para la primera lista", "Muestras 6.50 para la segunda lista"],
+        success: "Una sola función te sirve para cualquier lista de notas.",
+        validate(result, source) {
+          return [
+            uses(source, /def\s+promedio\s*\(\s*\w+\s*\)/) && uses(source, /sum\s*\(/) && uses(source, /len\s*\(/),
+            shows(result, "5.50"),
+            shows(result, "6.50")
+          ];
+        }
+      },
+      {
+        id: 16,
+        title: "Analiza una frase",
+        shortTitle: "Analizador de texto",
+        duration: "20 min",
+        difficulty: "Texto",
+        file: "proyecto_16.py",
+        summary: "Los textos también tienen métodos: se pueden separar, contar y transformar.",
+        example: 'frase.split()',
+        explanation: "split() divide la frase en una lista de palabras, len() las cuenta y upper() devuelve el texto en mayúsculas.",
+        concepts: ["Dividir con split()", "Contar palabras", "Transformar con upper()"],
+        goal: "Escribe contar_palabras(frase) que devuelva cuántas palabras hay, y muestra el total junto con la frase en mayúsculas.",
+        starter: 'frase = "aprender python abre puertas"\n\ndef contar_palabras(texto):\n    return 0\n\nprint(contar_palabras(frase))',
+        hints: [
+          "texto.split() devuelve la lista de palabras separadas por espacios.",
+          "Devuelve len(texto.split()).",
+          "La frase de ejemplo tiene 4 palabras; muestra también frase.upper()."
+        ],
+        checks: ["Usas split() dentro de la función", "Muestras el total de palabras", "Muestras la frase en mayúsculas"],
+        success: "Ya combinas funciones propias con los métodos del texto.",
+        validate(result, source) {
+          const frase = result.environment.frase;
+          const total = typeof frase === "string" ? frase.trim().split(/\s+/).length : 0;
+          return [
+            uses(source, /def\s+contar_palabras\s*\(/) && uses(source, /\.split\s*\(/),
+            total > 0 && shows(result, total),
+            typeof frase === "string" && shows(result, frase.toUpperCase())
+          ];
+        }
+      }
+    ]
+  },
+  {
+    id: 5,
+    title: "Integración final",
+    description: "Filtros, errores y proyectos completos",
+    stage: "Integración final",
+    completionTitle: "Finalizaste la integración final de Python.",
+    completionCopy: "Terminaste los veinte proyectos. Aprueba este último mini examen para cerrar la ruta completa.",
+    approvedCopy: "Aprobaste los cinco mini exámenes de la ruta. Completaste Python de principio a fin.",
+    projects: [
+      {
+        id: 17,
+        title: "Filtra con una comprensión",
+        shortTitle: "Comprensión de listas",
+        duration: "18 min",
+        difficulty: "Integración",
+        file: "proyecto_17.py",
+        summary: "Una comprensión de listas construye una lista nueva describiendo qué quieres conservar.",
+        example: "grandes = [n for n in numeros if n > 10]",
+        explanation: "Se lee de izquierda a derecha: qué guardar, de dónde sacarlo y qué condición debe cumplir. Reemplaza a un ciclo con append().",
+        concepts: ["Construir listas en una línea", "Filtrar con una condición", "Leer el resultado con len()"],
+        goal: "Crea la lista grandes con los números mayores a 10 usando una comprensión, muéstrala e indica cuántos son.",
+        starter: 'numeros = [12, 7, 30, 4, 18]\nprint(numeros)',
+        hints: [
+          "La estructura es [valor for valor in lista if condicion].",
+          "La condición que necesitas es n > 10.",
+          "Deben quedar 3 números: 12, 30 y 18."
+        ],
+        checks: ["Usas una comprensión de listas", "grandes contiene 12, 30 y 18", "Indicas que son 3"],
+        success: "Escribiste un filtro completo en una sola línea legible.",
+        validate(result, source) {
+          return [
+            uses(source, /\[[^\]]*\bfor\b[^\]]*\bin\b[^\]]*\]/),
+            sameList(result.environment.grandes, [12, 30, 18]),
+            shows(result, 3)
+          ];
+        }
+      },
+      {
+        id: 18,
+        title: "Maneja errores con try",
+        shortTitle: "Manejo de errores",
+        duration: "20 min",
+        difficulty: "Integración",
+        file: "proyecto_18.py",
+        summary: "Un programa útil no se detiene ante un dato inesperado: lo detecta y sigue adelante.",
+        example: "try:\n    numero = int(dato)\nexcept ValueError:\n    print(\"Dato inválido\")",
+        explanation: "try intenta ejecutar el bloque y except captura el error indicado. Así el resto del programa continúa funcionando.",
+        concepts: ["Proteger con try", "Capturar ValueError", "Continuar después del error"],
+        goal: "Recorre la lista de datos, suma los que sean números y avisa “Dato inválido” con el valor que falló. Muestra el total al final.",
+        starter: 'datos = ["12", "hola", "30"]\ntotal = 0\n\nfor dato in datos:\n    total += int(dato)\n\nprint(total)',
+        hints: [
+          "Rodea la conversión con try: dentro del ciclo.",
+          "Agrega except ValueError: con el aviso correspondiente.",
+          "El total esperado es 42 y debe aparecer un aviso para “hola”."
+        ],
+        checks: ["Usas try y except", "Avisas del dato inválido", "El total es 42"],
+        success: "Tu programa resiste datos imperfectos, como los de la vida real.",
+        validate(result, source) {
+          return [
+            uses(source, /\btry\s*:/) && uses(source, /\bexcept\b/),
+            result.output.some((line) => /inv[áa]lid/i.test(line) && line.includes("hola")),
+            result.environment.total === 42 && shows(result, 42)
+          ];
+        }
+      },
+      {
+        id: 19,
+        title: "Arma un reporte de ventas",
+        shortTitle: "Reporte de ventas",
+        duration: "22 min",
+        difficulty: "Integración",
+        file: "proyecto_19.py",
+        summary: "Un reporte combina un diccionario, una función y un mensaje claro para quien lo lee.",
+        example: "def mejor_dia(ventas):",
+        explanation: "La función recorre el diccionario, compara los montos y devuelve la clave ganadora. Después se arma el mensaje final.",
+        concepts: ["Recorrer y comparar", "Devolver el resultado", "Presentar el reporte"],
+        goal: "Escribe mejor_dia(ventas) y muestra el mejor día con su monto y, en otra línea, el total vendido.",
+        starter: 'ventas = {"lunes": 120, "martes": 340, "miercoles": 90}\n\ndef mejor_dia(datos):\n    return ""\n\nprint(mejor_dia(ventas))',
+        hints: [
+          "Dentro de la función guarda el mejor día y el mayor monto mientras recorres datos.items().",
+          'Arma el mensaje con una f-string: f"El mejor día fue {dia} con {monto}".',
+          "El total sale de sum(ventas.values()) y es 550."
+        ],
+        checks: ["Defines la función mejor_dia", "El reporte indica martes y 340", "Muestras el total 550"],
+        success: "Convertiste datos sueltos en un reporte que cualquiera entiende.",
+        validate(result, source) {
+          return [
+            uses(source, /def\s+mejor_dia\s*\(/),
+            result.output.some((line) => line.includes("martes") && line.includes("340")),
+            shows(result, 550)
+          ];
+        }
+      },
+      {
+        id: 20,
+        title: "Proyecto final: gestor de tareas",
         shortTitle: "Proyecto final",
         duration: "30 min",
-        difficulty: "Desafío final",
-        file: "proyecto_12.py",
-        summary: "El proyecto final combina variables, decisiones, funciones y texto con formato en un pequeño recomendador.",
-        example: "recomendar(horas, tema)",
-        explanation: "El programa recibe un tiempo disponible y un tema, decide la profundidad adecuada y devuelve una recomendación personalizada.",
-        concepts: ["Combinar fundamentos", "Tomar una decisión dentro de una función", "Construir una salida útil"],
-        goal: "Modifica horas y tema, y consigue una recomendación que cambie según el tiempo disponible.",
-        starter: 'horas = 3\ntema = "funciones"\n\ndef recomendar(horas, tema):\n    if horas >= 2:\n        return f"Practica {tema} con un proyecto"\n    return f"Repasa {tema} durante 20 minutos"\n\nprint(recomendar(horas, tema))',
+        difficulty: "Proyecto",
+        file: "proyecto_20.py",
+        summary: "El cierre de la ruta reúne listas, diccionarios, funciones, condiciones y formato de texto.",
+        example: 'tareas = [{"nombre": "Practicar", "hecha": False}]',
+        explanation: "Cada tarea es un diccionario dentro de una lista. La función recorre la colección, cuenta lo completado y arma el resumen.",
+        concepts: ["Listas de diccionarios", "Contar con condiciones", "Reportar el avance"],
+        goal: "Escribe resumen(tareas) que muestre “Completadas 1 de 3 (33%)” y liste las tareas pendientes con un guion delante.",
+        starter: 'tareas = [\n    {"nombre": "Leer la guía", "hecha": True},\n    {"nombre": "Practicar", "hecha": False},\n    {"nombre": "Repasar", "hecha": False}\n]\n\ndef resumen(items):\n    print(len(items))\n\nresumen(tareas)',
         hints: [
-          "La función necesita recibir horas y tema.",
-          "Dentro de la función usa if horas >= 2.",
-          "Ambos caminos deben devolver una recomendación que incluya tema.",
+          "Cuenta las hechas recorriendo la lista y revisando tarea[\"hecha\"].",
+          "El porcentaje es int(hechas / len(items) * 100).",
+          'Para las pendientes usa print("-", tarea["nombre"]) dentro de un if.'
         ],
-        checks: ["Defines las variables de entrada", "Combinas función, condición y return", "La recomendación cambia según las horas"],
-        success: "Completaste una solución que combina toda la ruta.",
-        execute: runStudyRecommender,
+        checks: ["Defines resumen() y la llamas", "Muestras “1 de 3” con su porcentaje", "Listas las dos tareas pendientes"],
+        success: "Cerraste la ruta con un programa completo de principio a fin.",
         validate(result, source) {
-          const env = result.environment;
-          const expectedPhrase = env.horas >= 2 ? "Practica" : "Repasa";
+          const pendientes = result.output.filter((line) => line.trim().startsWith("-"));
           return [
-            Number.isFinite(env.horas) && typeof env.tema === "string",
-            /def\s+recomendar/.test(source) && /if\s+horas\s*>=\s*2/.test(source) && /return\s+f?["']/.test(source),
-            result.output.some((line) => line.includes(expectedPhrase) && line.includes(env.tema)) && /print\s*\(\s*recomendar/.test(source),
+            uses(source, /def\s+resumen\s*\(/) && uses(source, /resumen\s*\(\s*tareas\s*\)/),
+            result.output.some((line) => line.includes("1 de 3")) && shows(result, 33),
+            pendientes.length >= 2
+              && pendientes.some((line) => line.includes("Practicar"))
+              && pendientes.some((line) => line.includes("Repasar"))
           ];
-        },
-      },
-    ],
-  },
+        }
+      }
+    ]
+  }
 ];
-
-const EXAMS_KEY = "codigo-cero.python-v2.exams";
 
 const LEVEL_EXAMS = [
   {
@@ -447,8 +699,8 @@ const LEVEL_EXAMS = [
   },
   {
     levelId: 2,
-    title: "Mini examen de aplicación de fundamentos",
-    intro: "Cinco preguntas sobre condiciones, ciclos y listas. Necesitas 4 respuestas correctas para aprobar.",
+    title: "Mini examen de decisiones y ciclos",
+    intro: "Cinco preguntas sobre condiciones, repeticiones y recorridos. Necesitas 4 respuestas correctas para aprobar.",
     passing: 4,
     questions: [
       {
@@ -480,10 +732,15 @@ const LEVEL_EXAMS = [
         explanation: "range(1, 5) recorre 1, 2, 3 y 4: incluye el inicio y excluye el final."
       },
       {
-        question: "Si tareas = [\"Leer\", \"Practicar\"], ¿cómo obtienes \"Leer\"?",
-        options: ["tareas[1]", "tareas[0]", "tareas(\"Leer\")", "tareas.primero"],
+        question: "¿Qué hace la palabra continue dentro de un ciclo?",
+        options: [
+          "Termina el ciclo por completo",
+          "Salta a la siguiente vuelta sin ejecutar el resto del bloque",
+          "Vuelve a empezar el programa",
+          "Repite la vuelta actual otra vez"
+        ],
         answer: 1,
-        explanation: "Las posiciones empiezan en cero, así que el primer elemento es tareas[0]."
+        explanation: "continue abandona solo la vuelta actual; break es el que termina el ciclo completo."
       },
       {
         question: "¿Qué símbolo compara si dos valores son iguales?",
@@ -495,7 +752,60 @@ const LEVEL_EXAMS = [
   },
   {
     levelId: 3,
-    title: "Mini examen de integración de fundamentos",
+    title: "Mini examen de colecciones de datos",
+    intro: "Cinco preguntas sobre listas, diccionarios y recorridos. Necesitas 4 respuestas correctas para aprobar.",
+    passing: 4,
+    questions: [
+      {
+        question: "Si compras = [\"pan\", \"leche\"], ¿cómo obtienes \"pan\"?",
+        options: ["compras[1]", "compras[0]", "compras(\"pan\")", "compras.primero"],
+        answer: 1,
+        explanation: "Las posiciones empiezan en cero, así que el primer elemento es compras[0]."
+      },
+      {
+        question: "¿Qué hace lista.append(\"nuevo\")?",
+        options: [
+          "Reemplaza toda la lista",
+          "Agrega el elemento al final de la lista",
+          "Ordena la lista alfabéticamente",
+          "Elimina el último elemento"
+        ],
+        answer: 1,
+        explanation: "append() agrega al final y modifica la lista original, sin crear una copia."
+      },
+      {
+        question: "¿Qué devuelve len({\"a\": 1, \"b\": 2})?",
+        options: ["1", "2", "3", "Un error"],
+        answer: 1,
+        explanation: "len() sobre un diccionario cuenta cuántos pares de clave y valor contiene."
+      },
+      {
+        question: "¿Cuál es la ventaja de curso.get(\"nivel\", \"sin datos\")?",
+        options: [
+          "Ordena las claves del diccionario",
+          "Entrega un valor por defecto si la clave no existe, en vez de fallar",
+          "Agrega la clave al diccionario",
+          "Convierte el diccionario en lista"
+        ],
+        answer: 1,
+        explanation: "Con corchetes una clave inexistente provoca un KeyError; get() permite entregar una alternativa."
+      },
+      {
+        question: "En for producto, cantidad in stock.items(), ¿qué recibe cada variable?",
+        options: [
+          "Las dos reciben la clave",
+          "producto recibe la clave y cantidad recibe el valor",
+          "producto recibe el valor y cantidad la posición",
+          "Ambas reciben la lista completa"
+        ],
+        answer: 1,
+        explanation: "items() entrega pares de clave y valor, y el for los reparte en ese mismo orden."
+      }
+    ]
+  },
+  {
+    levelId: 4,
+    title: "Mini examen de funciones propias",
     intro: "Cinco preguntas sobre funciones, parámetros y resultados. Necesitas 4 respuestas correctas para aprobar.",
     passing: 4,
     questions: [
@@ -528,15 +838,15 @@ const LEVEL_EXAMS = [
         explanation: "Sin return, Python devuelve None: la función hizo su trabajo pero no entregó un valor."
       },
       {
-        question: "¿Qué es un parámetro?",
+        question: "En def precio_final(precio, descuento=10), ¿qué significa descuento=10?",
         options: [
-          "El nombre de la función",
-          "El dato que la función recibe para trabajar",
-          "El resultado final de la función",
-          "Un comentario dentro del código"
+          "Que el descuento siempre vale 10",
+          "Que si no envías ese dato, la función usa 10",
+          "Que el parámetro es obligatorio",
+          "Que la función devuelve 10"
         ],
         answer: 1,
-        explanation: "El parámetro es la entrada: se declara entre paréntesis y toma el valor de cada llamada."
+        explanation: "Es un valor por defecto: cubre el caso habitual y se puede reemplazar en cada llamada."
       },
       {
         question: "¿Cómo se calcula el promedio de notas = [4, 5, 6]?",
@@ -550,10 +860,64 @@ const LEVEL_EXAMS = [
         explanation: "sum() suma los valores y len() cuenta cuántos hay: el promedio es la división entre ambos."
       }
     ]
+  },
+  {
+    levelId: 5,
+    title: "Mini examen de integración final",
+    intro: "Cinco preguntas sobre filtros, errores y formato. Necesitas 4 respuestas correctas para aprobar.",
+    passing: 4,
+    questions: [
+      {
+        question: "¿Qué produce [n for n in numeros if n > 10]?",
+        options: [
+          "Un número con la cantidad de elementos",
+          "Una lista nueva con los elementos mayores a 10",
+          "La lista original ordenada",
+          "Un error, porque falta append()"
+        ],
+        answer: 1,
+        explanation: "Una comprensión construye una lista nueva; la original no se modifica."
+      },
+      {
+        question: "¿Para qué sirve try / except?",
+        options: [
+          "Para repetir un bloque hasta que funcione",
+          "Para ejecutar una alternativa cuando ocurre un error, sin detener el programa",
+          "Para comentar código que no se usa",
+          "Para definir funciones más rápidas"
+        ],
+        answer: 1,
+        explanation: "El bloque try intenta la operación y except decide qué hacer si falla."
+      },
+      {
+        question: "¿Qué error ocurre al ejecutar int(\"hola\")?",
+        options: ["ZeroDivisionError", "ValueError", "IndexError", "NameError"],
+        answer: 1,
+        explanation: "El texto no representa un número entero, así que Python levanta un ValueError."
+      },
+      {
+        question: "¿Qué muestra print(f\"{2 / 3:.2f}\")?",
+        options: ["0.666666", "0.67", "2/3", "0.66"],
+        answer: 1,
+        explanation: "El formato .2f redondea a dos decimales al mostrar el valor."
+      },
+      {
+        question: "¿Por qué conviene mover un cálculo repetido a una función?",
+        options: [
+          "Porque el programa ocupa menos memoria",
+          "Porque se escribe y se corrige en un solo lugar, y se puede probar aparte",
+          "Porque Python obliga a usar funciones",
+          "Porque las funciones se ejecutan más rápido siempre"
+        ],
+        answer: 1,
+        explanation: "Reunir la lógica en una función evita repetir código y facilita corregirlo y probarlo."
+      }
+    ]
   }
 ];
 
 const allProjects = () => COURSE_LEVELS.flatMap((level) => level.projects);
+const TOTAL_PROJECTS = COURSE_LEVELS.reduce((total, level) => total + level.projects.length, 0);
 const hasValue = (object, key) => Object.prototype.hasOwnProperty.call(object, key);
 
 const heroCode = document.querySelector("#hero-code");
@@ -602,203 +966,19 @@ let examLevelId = 1;
 let examAnswers = new Map();
 let examReviewed = false;
 
-function parseString(expression) {
-  const match = expression.match(/^(["'])([\s\S]*)\1$/);
-  if (!match) return null;
-  return match[2]
-    .replace(/\\n/g, "\n")
-    .replace(/\\t/g, "\t")
-    .replace(/\\"/g, '"')
-    .replace(/\\'/g, "'")
-    .replace(/\\\\/g, "\\");
-}
-
-function evaluateExpression(expression, environment) {
-  const value = expression.trim();
-  const formatted = value.match(/^f(["'])([\s\S]*)\1$/);
-
-  if (formatted) {
-    return formatted[2].replace(/\{([A-Za-z_]\w*)\}/g, (_, name) => {
-      if (!hasValue(environment, name)) throw new Error("La variable “" + name + "” todavía no existe.");
-      return String(environment[name]);
-    });
-  }
-
-  const text = parseString(value);
-  if (text !== null) return text;
-  if (/^-?\d+(?:\.\d+)?$/.test(value)) return Number(value);
-  if (/^[A-Za-z_]\w*$/.test(value)) {
-    if (!hasValue(environment, value)) throw new Error("La variable “" + value + "” todavía no existe.");
-    return environment[value];
-  }
-
-  const operation = value.match(/^([A-Za-z_]\w*|-?\d+(?:\.\d+)?)\s*(\/\/|\/|%|\+|-|\*)\s*([A-Za-z_]\w*|-?\d+(?:\.\d+)?)$/);
-  if (operation) {
-    const left = evaluateExpression(operation[1], environment);
-    const right = evaluateExpression(operation[3], environment);
-    if (["//", "/", "%"].includes(operation[2]) && Number(right) === 0) throw new Error("No es posible dividir por cero.");
-    if (operation[2] === "//") return Math.floor(Number(left) / Number(right));
-    if (operation[2] === "/") return Number(left) / Number(right);
-    if (operation[2] === "%") return Number(left) % Number(right);
-    if (operation[2] === "+") return left + right;
-    if (operation[2] === "-") return Number(left) - Number(right);
-    if (operation[2] === "*") return Number(left) * Number(right);
-  }
-
-  throw new Error("No reconozco la expresión “" + value + "” en este laboratorio.");
-}
-
 function runPython(source) {
-  const environment = {};
-  const output = [];
-  const lines = source.split(/\r?\n/);
-
-  lines.forEach((rawLine, index) => {
-    const line = rawLine.trim();
-    if (!line || line.startsWith("#")) return;
-    try {
-      const assignment = line.match(/^([A-Za-z_]\w*)\s*=\s*(.+)$/);
-      if (assignment) {
-        environment[assignment[1]] = evaluateExpression(assignment[2], environment);
-        return;
-      }
-      const printCall = line.match(/^print\((.*)\)$/);
-      if (printCall) {
-        output.push(String(evaluateExpression(printCall[1], environment)));
-        return;
-      }
-      throw new Error("Usa una asignación o print() como en el ejemplo.");
-    } catch (error) {
-      throw new Error("Línea " + (index + 1) + ": " + error.message);
-    }
-  });
-
-  if (output.length === 0) throw new Error("El programa no mostró ningún resultado. Agrega print().");
-  return { environment, output };
-}
-
-function readNumberVariable(source, name) {
-  const pattern = new RegExp("^\\s*" + name + "\\s*=\\s*(-?\\d+(?:\\.\\d+)?)\\s*$", "m");
-  const match = source.match(pattern);
-  if (!match) throw new Error("Define “" + name + "” con un valor numérico.");
-  return Number(match[1]);
-}
-
-function readStringVariable(source, name) {
-  const pattern = new RegExp("^\\s*" + name + "\\s*=\\s*[\"']([^\"']+)[\"']\\s*$", "m");
-  const match = source.match(pattern);
-  if (!match) throw new Error("Define “" + name + "” con un texto entre comillas.");
-  return match[1];
-}
-
-function readStringList(source, name) {
-  const pattern = new RegExp("^\\s*" + name + "\\s*=\\s*\\[([^\\]]*)\\]\\s*$", "m");
-  const match = source.match(pattern);
-  if (!match) throw new Error("Crea la lista “" + name + "” utilizando corchetes.");
-  const values = [];
-  const valuePattern = /(["'])(.*?)\1/g;
-  let valueMatch = valuePattern.exec(match[1]);
-  while (valueMatch) {
-    values.push(valueMatch[2]);
-    valueMatch = valuePattern.exec(match[1]);
+  const runtime = globalThis.PythonRuntime;
+  if (!runtime) throw new Error("El intérprete de Python no se cargó. Recarga la página para volver a intentarlo.");
+  const result = runtime.run(source);
+  if (result.error) {
+    const failure = new Error(result.error);
+    failure.output = result.output;
+    throw failure;
   }
-  if (values.length === 0) throw new Error("Agrega textos entre comillas dentro de “" + name + "”.");
-  return values;
-}
-
-function readNumberList(source, name) {
-  const pattern = new RegExp("^\\s*" + name + "\\s*=\\s*\\[([^\\]]*)\\]\\s*$", "m");
-  const match = source.match(pattern);
-  if (!match) throw new Error("Crea la lista “" + name + "” utilizando corchetes.");
-  const entries = match[1].trim().replace(/,\s*$/, "");
-  const values = entries ? entries.split(",").map((value) => Number(value.trim())) : [];
-  if (values.length === 0 || values.some((value) => !Number.isFinite(value))) {
-    throw new Error("La lista “" + name + "” debe contener únicamente números separados por comas.");
+  if (result.output.length === 0) {
+    throw new Error("El programa no mostró ningún resultado. Agrega print() para ver la salida.");
   }
-  return values;
-}
-
-function runAgeDecision(source) {
-  const edad = readNumberVariable(source, "edad");
-  return { environment: { edad }, output: [edad >= 18 ? "Mayor de edad" : "Menor de edad"] };
-}
-
-// Los proyectos 5–12 son modelos didácticos, no un intérprete Python general.
-// Solo aceptamos la estructura que el modelo realmente representa. Cambiar
-// operaciones, mensajes o sangría nunca puede devolver una salida inventada.
-function assertGuidedPython(project, source) {
-  const normalize = (text) => text.split(/\r?\n/)
-    .filter((line) => line.trim() && !line.trim().startsWith("#"))
-    .map((line) => line.trimEnd())
-    .map((line) => {
-      if ([5, 6, 12].includes(project.id)) {
-        line = line.replace(/^(edad|temperatura|horas) = -?\d+(?:\.\d+)?$/, "$1 = <numero>");
-        if (project.id === 12) line = line.replace(/^tema = (["'])[^"'\\]*\1$/, "tema = <texto>");
-      }
-      if (project.id === 7) line = line.replace(/^for numero in range\(-?\d+, ?-?\d+\):$/, "for numero in range(<inicio>, <fin>):");
-      if (project.id === 8) line = line.replace(/^tareas = \[\s*(?:(?:"[^"\\]*"|'[^'\\]*')(?:\s*,\s*(?:"[^"\\]*"|'[^'\\]*'))*\s*,?)?\s*\]$/, "tareas = <lista>");
-      if (project.id === 9) line = line.replace(/^print\(saludar\((["'])[^"'\\]+\1\)\)$/, "print(saludar(<nombre>))");
-      if (project.id === 10) line = line.replace(/^print\(precio_final\(-?\d+(?:\.\d+)?, ?-?\d+(?:\.\d+)?\)\)$/, "print(precio_final(<precio>, <descuento>))");
-      if (project.id === 11) line = line.replace(/^notas = \[\s*(?:-?\d+(?:\.\d+)?(?:\s*,\s*-?\d+(?:\.\d+)?)*\s*,?)?\s*\]$/, "notas = <lista>");
-      return line;
-    }).join("\n");
-  if (normalize(source) !== normalize(project.starter)) {
-    throw new Error("Este proyecto es un simulador guiado: conserva las instrucciones y la sangría del ejemplo y cambia solo los datos indicados. No ejecuta otras variantes de Python. Usa «Restablecer» para recuperar el modelo.");
-  }
-}
-
-function runTemperatureClassifier(source) {
-  const temperatura = readNumberVariable(source, "temperatura");
-  const label = temperatura < 10 ? "Hace frío" : temperatura < 25 ? "Clima agradable" : "Hace calor";
-  return { environment: { temperatura }, output: [label] };
-}
-
-function runRangeLoop(source) {
-  const loop = source.match(/for\s+([A-Za-z_]\w*)\s+in\s+range\s*\(\s*(-?\d+)\s*,\s*(-?\d+)\s*\)\s*:/);
-  if (!loop) throw new Error("Escribe un ciclo con for y range(inicio, límite).");
-  const start = Number(loop[2]);
-  const end = Number(loop[3]);
-  if (end <= start || end - start > 30) throw new Error("Utiliza un rango ascendente de hasta 30 valores.");
-  const values = Array.from({ length: end - start }, (_, index) => start + index);
-  return { environment: { values }, output: values.map(String) };
-}
-
-function runListLoop(source) {
-  const tareas = readStringList(source, "tareas");
-  return { environment: { tareas }, output: [...tareas] };
-}
-
-function runGreetingFunction(source) {
-  const call = source.match(/print\s*\(\s*saludar\s*\(\s*["']([^"']+)["']\s*\)\s*\)/);
-  if (!call) throw new Error("Llama saludar() dentro de print() usando un nombre entre comillas.");
-  const nombre = call[1];
-  return { environment: { nombre }, output: ["Hola, " + nombre] };
-}
-
-function runDiscountFunction(source) {
-  const call = source.match(/precio_final\s*\(\s*(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)\s*\)/g);
-  if (!call) throw new Error("Llama precio_final() con un precio y un descuento.");
-  const lastCall = call[call.length - 1];
-  const values = lastCall.match(/-?\d+(?:\.\d+)?/g).map(Number);
-  const precio = values[0];
-  const descuento = values[1];
-  const expected = precio - precio * descuento / 100;
-  return { environment: { precio, descuento, expected }, output: [String(expected)] };
-}
-
-function runAverageProject(source) {
-  const notas = readNumberList(source, "notas");
-  const promedio = notas.reduce((total, value) => total + value, 0) / notas.length;
-  return { environment: { notas, promedio }, output: ["Promedio: " + promedio] };
-}
-
-function runStudyRecommender(source) {
-  const horas = readNumberVariable(source, "horas");
-  const tema = readStringVariable(source, "tema");
-  const message = horas >= 2
-    ? "Practica " + tema + " con un proyecto"
-    : "Repasa " + tema + " durante 20 minutos";
-  return { environment: { horas, tema }, output: [message] };
+  return result;
 }
 
 const EXAM_LETTERS = ["A", "B", "C", "D"];
@@ -1036,7 +1216,7 @@ function saveCurrentDraft() {
 function loadProgress() {
   try {
     const saved = JSON.parse(localStorage.getItem(PROGRESS_KEY) || "[]");
-    return new Set(saved.filter((project) => Number.isInteger(project) && project >= 1 && project <= 12));
+    return new Set(saved.filter((project) => Number.isInteger(project) && project >= 1 && project <= TOTAL_PROJECTS));
   } catch {
     return new Set();
   }
@@ -1116,10 +1296,10 @@ function renderValidations(results = null) {
 
 function renderProgress() {
   const completed = completedProjects.size;
-  routeProgressText.textContent = completed + " de 12";
-  routeProgressFill.style.width = (completed / 12 * 100) + "%";
+  routeProgressText.textContent = completed + " de " + TOTAL_PROJECTS;
+  routeProgressFill.style.width = (completed / TOTAL_PROJECTS * 100) + "%";
   const approvedAll = COURSE_LEVELS.every((level) => approvedExams.has(level.id));
-  courseFinish.hidden = !(completed === 12 && approvedAll);
+  courseFinish.hidden = !(completed === TOTAL_PROJECTS && approvedAll);
 }
 
 function renderProject() {
@@ -1138,9 +1318,9 @@ function renderProject() {
   document.querySelector("#course-project-file").textContent = project.file;
   document.querySelector("#course-project-success-copy").textContent = project.success;
   const scopeNote = document.querySelector("#python-lab-scope");
-  if (scopeNote) scopeNote.textContent = project.execute
-    ? "Simulador guiado: conserva las instrucciones del ejemplo. Puedes cambiar los datos de entrada de la misión (valores, listas o límites de range), no la lógica. Para escribir otras soluciones utiliza Python 3 en tu equipo."
-    : "Editor educativo: interpreta las asignaciones, print, f-strings y operaciones simples de estos primeros cuatro proyectos. No ejecuta Python completo. Cambia el ejemplo y comprueba la salida.";
+  if (scopeNote) {
+    scopeNote.textContent = "Intérprete de Python del laboratorio: ejecuta variables, operaciones, f-strings, condiciones, ciclos, listas, diccionarios, funciones, comprensiones y try/except. Escribe tu propia solución: la salida se calcula de verdad. No incluye módulos externos (import) ni input().";
+  }
   document.querySelector("#course-project").setAttribute("aria-labelledby", "level-tab-" + level.id + " course-project-title");
 
   projectCode.value = drafts.has(project.id) ? drafts.get(project.id) : project.starter;
@@ -1162,7 +1342,7 @@ function renderProject() {
   const nextProject = available[projectIndex + 1];
   previousButton.disabled = projectIndex <= 0;
   nextButton.disabled = !nextProject || !isLevelUnlocked(levelOfProject(nextProject.id).id);
-  positionText.textContent = "Proyecto " + project.id + " de 12";
+  positionText.textContent = "Proyecto " + project.id + " de " + TOTAL_PROJECTS;
   renderProjectList();
   renderCheckpoint();
   globalThis.LearningState?.save("python", project.id - 1, projectCode.value);
@@ -1208,9 +1388,7 @@ function runActiveProject() {
   drafts.set(project.id, projectCode.value);
   globalThis.LearningState?.save("python", project.id - 1, projectCode.value);
   try {
-    if (project.execute) assertGuidedPython(project, projectCode.value);
-    const source = projectCode.value.split(/\r?\n/).filter((line) => !line.trim().startsWith("#")).join("\n");
-    const result = project.execute ? project.execute(source) : runPython(source);
+    const result = runPython(projectCode.value);
     projectOutput.textContent = result.output.join("\n");
     projectOutput.classList.remove("is-error");
     const validationResults = project.validate(result, projectCode.value);

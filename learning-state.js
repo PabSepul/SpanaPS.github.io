@@ -3,7 +3,7 @@
 (() => {
   "use strict";
   const routes = [
-    { id: "python", name: "Python", count: 12, offset: 1, unit: "proyectos", anchor: "proyectos" },
+    { id: "python", name: "Python", count: 20, offset: 1, unit: "proyectos", anchor: "proyectos" },
     { id: "html-css", name: "HTML y CSS", count: 12, offset: 0, unit: "módulos" },
     { id: "javascript", name: "JavaScript", count: 12, offset: 0, unit: "módulos" },
     { id: "sql", name: "SQL", count: 12, offset: 0, unit: "módulos" },
@@ -65,16 +65,17 @@
       .filter((i) => Number.isInteger(i) && i >= route.offset && i < route.count + route.offset)
       .map((i) => i - route.offset));
     const unlocked = (i) => route.mini || Array.from({ length: Math.floor(i / 4) * 4 }, (_, n) => n).every((n) => completed.has(n));
+    const levels = route.mini ? 0 : Math.ceil(route.count / 4);
     const examValues = route.mini ? [] : read("codigo-cero." + id + "-v2.exams", []);
     const exams = new Set((Array.isArray(examValues) ? examValues : []).filter((i) =>
-      Number.isInteger(i) && i >= 1 && i <= 3 && Array.from({ length: i * 4 }, (_, n) => n).every((n) => completed.has(n))));
+      Number.isInteger(i) && i >= 1 && i <= levels && Array.from({ length: i * 4 }, (_, n) => n).every((n) => completed.has(n))));
     const saved = session(id);
     let active = saved.active;
     if (route.mini && Number.isInteger(miniState?.active) && miniState.active >= 0 && miniState.active < route.count) active = miniState.active;
     const first = Array.from({ length: route.count }, (_, i) => i).find((i) => !completed.has(i) && unlocked(i));
-    const pendingExam = [1, 2, 3].find((id) => !exams.has(id));
+    const pendingExam = Array.from({ length: levels }, (_, n) => n + 1).find((id) => !exams.has(id));
     if (active === null || !unlocked(active)) active = first ?? (route.mini ? 0 : ((pendingExam || 1) - 1) * 4);
-    const done = completed.size === route.count && (route.mini || exams.size === 3);
+    const done = completed.size === route.count && (route.mini || exams.size === levels);
     return { ...route, completed: completed.size, exams: exams.size, active, done,
       started: completed.size > 0 || saved.updatedAt > 0 || (route.mini && miniState?.active > 0),
       updatedAt: saved.updatedAt, percent: Math.round(completed.size / route.count * 100),

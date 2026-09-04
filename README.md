@@ -2,20 +2,33 @@
 
 Sitio educativo estático para aprender los fundamentos de programación en español.
 
-La ruta inicial de Python está organizada en tres niveles de cuatro proyectos:
+La ruta de Python está organizada en cinco niveles de cuatro proyectos:
 
 1. Fundamentos: mensajes, variables y operaciones.
-2. Decisiones y ciclos: condiciones, repeticiones y listas.
-3. Funciones y proyecto final: código reutilizable y un desafío integrador.
+2. Decisiones y ciclos: condiciones, repeticiones y recorridos.
+3. Colecciones de datos: listas, orden, diccionarios e inventarios.
+4. Funciones propias: parámetros, valores por defecto y resultados.
+5. Integración final: comprensiones, manejo de errores y proyectos completos.
 
-Cada proyecto incluye explicación, misión, tres pistas progresivas, ejecución segura en el navegador y tres comprobaciones antes de marcarlo como completado. El progreso y la preferencia de tema se guardan localmente en el navegador.
+Cada proyecto incluye explicación, misión, tres pistas progresivas, ejecución real en el navegador y tres comprobaciones antes de marcarlo como completado. El progreso y la preferencia de tema se guardan localmente en el navegador.
+
+El laboratorio de Python ejecuta el código con `python-runtime.js`, un intérprete propio escrito para el proyecto:
+tokenizador con sangría, analizador sintáctico y evaluador. Reconoce variables, aritmética con enteros y decimales,
+f-strings con formato, condiciones, `for`, `while`, listas, diccionarios, tuplas, rebanadas, funciones con valores por
+defecto, recursión, comprensiones de listas, expresiones condicionales, `try`/`except`/`finally` y más de cuarenta
+funciones y métodos incorporados. No usa `eval`, `Function` ni ejecución nativa, y limita pasos, profundidad y salida.
+No incluye módulos externos (`import`), `input()` ni `lambda`, y lo dice explícitamente en lugar de simular un resultado.
+
+Las salidas del intérprete se contrastan con CPython 3.12: `python-runtime.test.mjs` guarda 65 programas con la salida
+real de Python y la vuelve a comparar en vivo cuando el equipo tiene Python instalado.
 
 Las cuatro rutas extensas (Python, HTML/CSS, JavaScript y SQL) funcionan con puntos de control: solo el primer nivel está abierto al comenzar y el siguiente se
 desbloquea al terminar los cuatro proyectos o módulos del anterior. Al cerrar un nivel aparece el mensaje de cierre de esa etapa
-(conceptos básicos, aplicación e integración de fundamentos) y se habilita un mini examen de cinco preguntas de selección múltiple, con
+(conceptos básicos, decisiones y ciclos, colecciones, funciones e integración final) y se habilita un mini examen de cinco preguntas, con
 cuatro alternativas, explicación por pregunta y umbral de cuatro aciertos. Los exámenes se pueden repetir y la ruta se
-da por completada cuando están los doce proyectos o módulos y los tres exámenes aprobados. El examen no impide
-continuar al siguiente nivel, pero los tres deben aprobarse para cerrar la ruta. Reprobar un repaso no elimina una
+da por completada cuando están todos sus proyectos o módulos y todos sus exámenes aprobados: 20 proyectos y 5 exámenes
+en Python, 12 módulos y 3 exámenes en las demás. El examen no impide continuar al siguiente nivel, pero hay que
+aprobarlos todos para cerrar la ruta. Reprobar un repaso no elimina una
 aprobación previa. Los avances anteriores se conservan; los exámenes usan una clave propia por tecnología.
 
 El catálogo incluye otras tres rutas con la misma profundidad: tres niveles de cuatro módulos cada una.
@@ -68,7 +81,8 @@ son unitarias, no una revisión visual en un navegador.
 - `javascript.html`: introducción práctica a la lógica con JavaScript.
 - `sql.html`: introducción práctica a las consultas de datos.
 - `site.js`: comportamiento compartido, como el selector de tema.
-- `python.js`: contenido, ejecución y progreso exclusivo de la ruta Python.
+- `python-runtime.js`: intérprete de Python del laboratorio, contrastado con CPython.
+- `python.js`: los 5 niveles, 20 proyectos, 5 exámenes y el progreso de la ruta Python.
 - `starter-runtime.js`: intérprete de JavaScript y motor de SQL usados por los laboratorios.
 - `sql-course.js`: contenido didáctico de los doce módulos de SQL, resultados esperados, comprobaciones exactas y tres desafíos extra. Conserva los índices y claves de progreso previos.
 - `sql-guide.js` y `sql.css`: tablas de datos y resultados, explicaciones guiadas, consulta rápida y laboratorio extra; se cargan solo en SQL.
@@ -95,11 +109,13 @@ si faltan los tres mini exámenes. Los mini cursos mantienen sus propias eleccio
 
 HTML/CSS y JavaScript incorporan resultados esperados, errores frecuentes y una pauta de práctica en
 `learning-guidance.js`. `learning-review.css` mejora la lectura y el espacio de los editores móviles en ambos temas.
-Python 1–4 usa un intérprete limitado; Python 5–12 usa modelos guiados. En estos últimos solo se aceptan cambios
-en los datos indicados, conservando la estructura del ejemplo. Otras modificaciones muestran un aviso, no un
-resultado simulado engañoso. Cambiar el código invalida una comprobación pendiente antes de poder completar.
+Los veinte proyectos de Python aceptan cualquier solución válida: el intérprete ejecuta el código escrito y las
+validaciones revisan la salida y las variables resultantes, no la forma del texto. Cambiar el código invalida una
+comprobación pendiente antes de poder completar.
 
-Pruebas adicionales: `node learning-state.test.mjs` y `node review-preview.test.mjs`.
+Pruebas adicionales: `node learning-state.test.mjs`, `node review-preview.test.mjs`,
+`node python-runtime.test.mjs` y `node python-checkpoints.test.mjs`. Las dos últimas comparan el intérprete y las
+veinte soluciones de referencia con CPython cuando está disponible.
 
 ## Mantenimiento y vista previa publicada
 

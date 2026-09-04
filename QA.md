@@ -8,12 +8,15 @@ El enlace de revisión no autentica ni protege información privada.
 
 ## Pruebas automáticas
 
-Las seis suites pasan:
+Las siete suites pasan:
 
 - `starter-course.test.mjs`: 36 módulos, 108 validaciones y 9 exámenes / 45 preguntas;
   desbloqueos, reintentos, progreso, marcado y recursos de las páginas.
-- `python-checkpoints.test.mjs`: 3 exámenes / 15 preguntas, desbloqueos, cierre de ruta,
-  rechazo de cambios fuera de los 8 modelos guiados e invalidación al editar.
+- `python-checkpoints.test.mjs`: 5 niveles, 20 proyectos resueltos con soluciones de referencia,
+  60 validaciones, 5 exámenes / 25 preguntas, desbloqueos, cierre de ruta e invalidación al editar.
+  Contrasta las 20 soluciones con CPython cuando está disponible.
+- `python-runtime.test.mjs`: 65 programas con la salida registrada de CPython 3.12 y 10 errores
+  explicados en español; vuelve a comparar en vivo si el equipo tiene Python.
 - `sql-guide.test.mjs`: 12 lecciones, 12 ejemplos, 3 desafíos, tablas y aislamiento entre editores.
 - `mini-courses.test.mjs`: 12 proyectos, 36 comprobaciones, 100 combinaciones;
   24 resultados contrastados con CPython y plantillas Node contrastadas con dobles de archivos/HTTP.
@@ -28,7 +31,7 @@ Se usó `127.0.0.1:4174` para separar las pruebas del avance del usuario en `loc
 
 - Python: ejecutar, invalidar aprobación al editar, conservar borrador y proyecto al recargar,
   completar los primeros 4 proyectos, desbloquear nivel 2, examen sin respuestas y aprobación 5/5.
-  La portada reflejó 4/12 proyectos y 1/3 exámenes.
+  La portada reflejó 4/20 proyectos y 1/5 exámenes.
 - HTML/CSS: resolver primer módulo, comprobar contenido de la vista previa aislada y completar;
   cambiar pestaña usando el teclado.
 - JavaScript: ejecutar y completar el primer módulo.
@@ -46,8 +49,10 @@ Se usó `127.0.0.1:4174` para separar las pruebas del avance del usuario en `loc
 
 - Solo navegador integrado de escritorio con viewport móvil; falta probar dispositivos físicos, Safari y lectores de pantalla.
 - Los doce ejercicios de cada ruta se cubren automáticamente; no se recorrieron manualmente todos en navegador.
-- No hay Python completo, un servidor Node real, compilador TypeScript ni runtime React en los laboratorios.
-  Los mini cursos son constructores guiados. Python 5–12 también usa modelos de estructura fija.
+- Python se ejecuta con un intérprete propio que cubre un subconjunto amplio del lenguaje, contrastado con CPython.
+  No es CPython: no hay módulos externos (import), input(), lambda, clases ni archivos. Lo declara en pantalla.
+- No hay un servidor Node real, compilador TypeScript ni runtime React en los laboratorios.
+  Los mini cursos siguen siendo constructores guiados.
 - Los ejemplos React/TypeScript no se compilaron en un proyecto externo.
 - Las comprobaciones HTML/CSS son patrones educativos, no un validador completo de semántica o accesibilidad.
 - Progreso y borradores se guardan en un solo navegador/origen. No hay cuentas ni sincronización.

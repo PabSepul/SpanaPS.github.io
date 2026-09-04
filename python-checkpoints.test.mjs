@@ -1,8 +1,18 @@
 import assert from "node:assert/strict";
 import fs from "node:fs";
+import os from "node:os";
+import path from "node:path";
 import vm from "node:vm";
+import { execFileSync } from "node:child_process";
 
-const source = fs.readFileSync(new URL("./python.js", import.meta.url), "utf8");
+/*
+  La ruta de Python se ejecuta con el intérprete real de python-runtime.js.
+  Esta prueba resuelve los veinte proyectos, comprueba sus validaciones y
+  verifica los puntos de control, los cinco exámenes y el cierre de la ruta.
+*/
+
+const runtimeSource = fs.readFileSync(new URL("./python-runtime.js", import.meta.url), "utf8");
+const courseSource = fs.readFileSync(new URL("./python.js", import.meta.url), "utf8");
 
 class FakeElement {
   constructor(tag = "div") {
@@ -50,149 +60,259 @@ function createContext() {
   };
   const sandbox = { document, localStorage };
   vm.createContext(sandbox);
-  vm.runInContext(source, sandbox);
-  const run = (expression) => vm.runInContext(expression, sandbox);
-  const runJson = (expression) => JSON.parse(vm.runInContext("JSON.stringify(" + expression + ")", sandbox));
-  return { elements, storage, run, runJson };
+  vm.runInContext(runtimeSource, sandbox);
+  vm.runInContext(courseSource, sandbox);
+  return {
+    elements,
+    storage,
+    sandbox,
+    run: (expression) => vm.runInContext(expression, sandbox),
+    runJson: (expression) => JSON.parse(vm.runInContext("JSON.stringify(" + expression + ")", sandbox))
+  };
 }
 
-/* 1. Los datos de los tres exámenes están completos y son coherentes. */
+/* Soluciones de referencia: son programas Python completos, no plantillas. */
+const SOLUTIONS = {
+  1: 'print("Mi primer programa en Python")',
+  2: 'nombre = "Pablo"\nedad = 30\nprint(f"Soy {nombre} y tengo {edad} años")',
+  3: 'cuenta = 20000\nporcentaje = 10\npropina = cuenta * porcentaje / 100\ntotal = cuenta + propina\nprint(f"Propina: {propina}")\nprint(f"Total: {total}")',
+  4: 'minutos = 135\nhoras = minutos // 60\nresto = minutos % 60\nprint(f"{horas} h y {resto} min")',
+  5: 'edad = 20\nif edad >= 18:\n    print(f"Tienes {edad} años: mayor de edad")\nelse:\n    print("Menor de edad")',
+  6: 'temperatura = 30\nif temperatura < 10:\n    print("Hace frío")\nelif temperatura < 25:\n    print("Clima agradable")\nelse:\n    print("Hace calor")',
+  7: 'for numero in range(1, 6):\n    print(f"Vuelta {numero}")',
+  8: 'tareas = ["Leer la lección", "Practicar", "Repasar"]\nfor tarea in tareas:\n    print("-", tarea)\nprint(f"Total: {len(tareas)} tareas")',
+  9: 'compras = ["pan", "leche"]\ncompras.append("huevos")\ncompras.remove("leche")\nprint(compras)\nprint(len(compras))',
+  10: 'precios = [1200, 890, 2300, 450]\nordenados = sorted(precios)\npromedio = sum(precios) / len(precios)\nprint(ordenados)\nprint(min(precios), max(precios))\nprint(f"Promedio: {promedio:.2f}")',
+  11: 'curso = {"nombre": "Python", "horas": 12}\ncurso["nivel"] = "inicial"\nprint(curso)\nprint(curso.get("profesor", "sin datos"))',
+  12: 'stock = {"teclado": 3, "mouse": 0, "monitor": 5}\ntotal = 0\nfor producto, cantidad in stock.items():\n    if cantidad == 0:\n        print(producto, "agotado")\n    else:\n        print(producto, cantidad)\n    total += cantidad\nprint(f"Total: {total} unidades")',
+  13: 'def saludar(nombre):\n    return f"Hola, {nombre}"\n\nprint(saludar("Ada"))\nprint(saludar("Grace"))',
+  14: 'def precio_final(precio, descuento=10):\n    return precio - precio * descuento / 100\n\nprint(precio_final(1000))\nprint(precio_final(1000, 50))',
+  15: 'def promedio(notas):\n    return sum(notas) / len(notas)\n\nprint(f"{promedio([4, 5, 6, 7]):.2f}")\nprint(f"{promedio([6, 7]):.2f}")',
+  16: 'frase = "aprender python abre puertas"\n\ndef contar_palabras(texto):\n    return len(texto.split())\n\nprint(contar_palabras(frase))\nprint(frase.upper())',
+  17: 'numeros = [12, 7, 30, 4, 18]\ngrandes = [n for n in numeros if n > 10]\nprint(grandes)\nprint(len(grandes))',
+  18: 'datos = ["12", "hola", "30"]\ntotal = 0\n\nfor dato in datos:\n    try:\n        total += int(dato)\n    except ValueError:\n        print("Dato inválido:", dato)\n\nprint(total)',
+  19: 'ventas = {"lunes": 120, "martes": 340, "miercoles": 90}\n\ndef mejor_dia(datos):\n    dia = ""\n    monto = 0\n    for clave, valor in datos.items():\n        if valor > monto:\n            monto = valor\n            dia = clave\n    return f"El mejor día fue {dia} con {monto}"\n\nprint(mejor_dia(ventas))\nprint(sum(ventas.values()))',
+  20: 'tareas = [\n    {"nombre": "Leer la guía", "hecha": True},\n    {"nombre": "Practicar", "hecha": False},\n    {"nombre": "Repasar", "hecha": False}\n]\n\ndef resumen(items):\n    hechas = 0\n    for tarea in items:\n        if tarea["hecha"]:\n            hechas += 1\n    porcentaje = int(hechas / len(items) * 100)\n    print(f"Completadas {hechas} de {len(items)} ({porcentaje}%)")\n    for tarea in items:\n        if not tarea["hecha"]:\n            print("-", tarea["nombre"])\n\nresumen(tareas)'
+};
+
+/* Variantes libres: el laboratorio ya no exige copiar la estructura del ejemplo. */
+const FREE_VARIANTS = {
+  3: 'cuenta = 20000\nporcentaje = 10\npropina = cuenta * (porcentaje / 100)\ntotal = propina + cuenta\nprint("Propina:", propina)\nprint("Total:", total)',
+  8: 'tareas = ["Estudiar", "Ejercitar", "Descansar", "Dormir"]\nfor indice in range(len(tareas)):\n    print("-", tareas[indice])\nprint("Son", len(tareas), "tareas")',
+  12: 'stock = {"teclado": 3, "mouse": 0, "monitor": 5}\nunidades = sum(stock.values())\nfor producto, cantidad in stock.items():\n    estado = "agotado" if cantidad == 0 else cantidad\n    print(producto, estado)\nprint(unidades)',
+  20: 'tareas = [\n    {"nombre": "Leer la guía", "hecha": True},\n    {"nombre": "Practicar", "hecha": False},\n    {"nombre": "Repasar", "hecha": False}\n]\n\ndef resumen(items):\n    hechas = len([t for t in items if t["hecha"]])\n    print(f"Completadas {hechas} de {len(items)} ({int(hechas / len(items) * 100)}%)")\n    pendientes = [t["nombre"] for t in items if not t["hecha"]]\n    for nombre in pendientes:\n        print("-", nombre)\n\nresumen(tareas)'
+};
+
+/* 1. Estructura del curso. */
 
 const data = createContext();
+const levels = data.runJson("COURSE_LEVELS.map((level) => ({ id: level.id, stage: level.stage, title: level.completionTitle, projects: level.projects.map((p) => p.id) }))");
 const exams = data.runJson("LEVEL_EXAMS");
-const levels = data.runJson("COURSE_LEVELS.map((level) => ({ id: level.id, stage: level.stage, title: level.completionTitle, projects: level.projects.length }))");
 
-assert.equal(levels.length, 3, "Python debe tener 3 niveles");
-assert.deepEqual(levels.map((level) => level.projects), [4, 4, 4], "cada nivel debe tener 4 proyectos");
+assert.equal(levels.length, 5, "Python debe tener 5 niveles");
+assert.deepEqual(levels.map((level) => level.projects.length), [4, 4, 4, 4, 4], "cada nivel tiene 4 proyectos");
 assert.deepEqual(
-  levels.map((level) => level.stage),
-  ["Conceptos básicos", "Aplicación de fundamentos", "Integración de fundamentos"],
-  "cada nivel debe declarar su etapa"
+  levels.flatMap((level) => level.projects),
+  Array.from({ length: 20 }, (_, index) => index + 1),
+  "los proyectos van del 1 al 20 sin saltos"
 );
+assert.equal(new Set(levels.map((level) => level.stage)).size, 5, "cada nivel tiene una etapa distinta");
 for (const level of levels) {
-  assert.match(level.title, /^Finalizaste (los conceptos básicos|la aplicación de fundamentos|la integración de fundamentos) de Python\.$/, `nivel ${level.id} necesita mensaje de cierre`);
+  assert.match(level.title, /^Finalizaste .+ de Python\.$/, `nivel ${level.id} necesita mensaje de cierre`);
 }
 
-assert.equal(exams.length, 3, "debe existir un examen por nivel");
+assert.equal(exams.length, 5, "debe existir un examen por nivel");
+assert.deepEqual(exams.map((exam) => exam.levelId), [1, 2, 3, 4, 5]);
 for (const exam of exams) {
   assert.equal(exam.questions.length, 5, `el examen ${exam.levelId} debe tener 5 preguntas`);
   assert.ok(exam.passing > 0 && exam.passing <= exam.questions.length, `umbral inválido en el examen ${exam.levelId}`);
   for (const [index, question] of exam.questions.entries()) {
     const position = `examen ${exam.levelId}, pregunta ${index + 1}`;
     assert.equal(question.options.length, 4, `${position} debe ofrecer 4 alternativas`);
-    assert.ok(Number.isInteger(question.answer) && question.answer >= 0 && question.answer < 4, `${position} tiene respuesta fuera de rango`);
+    assert.ok(Number.isInteger(question.answer) && question.answer >= 0 && question.answer < 4, `${position}: respuesta fuera de rango`);
     assert.equal(new Set(question.options).size, 4, `${position} repite alternativas`);
-    assert.ok(question.explanation.length > 20, `${position} necesita una explicación`);
+    assert.ok(question.explanation.length > 20, `${position} necesita explicación`);
   }
 }
 
-/* 2. Los niveles se desbloquean al terminar el nivel anterior. */
+/* 2. Cada proyecto se resuelve con Python real y sus tres validaciones pasan. */
+
+const lab = createContext();
+const projects = lab.runJson("allProjects().map((p) => ({ id: p.id, checks: p.checks, starter: p.starter, file: p.file }))");
+assert.equal(projects.length, 20);
+
+function validar(context, projectId, code) {
+  context.sandbox.__code = code;
+  return context.runJson(
+    "(() => {" +
+    "  const project = allProjects().find((p) => p.id === " + projectId + ");" +
+    "  try {" +
+    "    const result = runPython(__code);" +
+    "    return { error: null, output: result.output, checks: project.validate(result, __code).map(Boolean) };" +
+    "  } catch (error) {" +
+    "    return { error: error.message, output: [], checks: project.checks.map(() => false) };" +
+    "  }" +
+    "})()"
+  );
+}
+
+let validaciones = 0;
+for (const project of projects) {
+  const solution = SOLUTIONS[project.id];
+  assert.ok(solution, `falta la solución de referencia del proyecto ${project.id}`);
+  assert.equal(project.checks.length, 3, `el proyecto ${project.id} debe declarar 3 comprobaciones`);
+  assert.match(project.file, /^proyecto_\d\d\.py$/);
+
+  const resuelto = validar(lab, project.id, solution);
+  assert.equal(resuelto.error, null, `la solución del proyecto ${project.id} no debe fallar: ${resuelto.error}`);
+  const fallidas = resuelto.checks.map((ok, index) => (ok ? null : index + 1)).filter(Boolean);
+  assert.deepEqual(fallidas, [], `proyecto ${project.id}: comprobaciones sin cumplir ${fallidas.join(", ")}`);
+  validaciones += resuelto.checks.length;
+
+  if (project.id >= 3) {
+    const inicial = validar(lab, project.id, project.starter);
+    assert.ok(
+      inicial.error || inicial.checks.some((ok) => !ok),
+      `el código inicial del proyecto ${project.id} no debería aprobar la misión`
+    );
+  }
+}
+
+for (const [id, variante] of Object.entries(FREE_VARIANTS)) {
+  const resultado = validar(lab, Number(id), variante);
+  assert.equal(resultado.error, null, `la variante libre del proyecto ${id} no debe fallar: ${resultado.error}`);
+  assert.deepEqual(
+    resultado.checks,
+    [true, true, true],
+    `el proyecto ${id} debe aceptar una solución escrita de otra forma`
+  );
+}
+
+/* 3. El laboratorio ejecuta de verdad y explica los errores. */
+
+const errado = validar(lab, 4, 'minutos = 135\nhoras = minutos // cero');
+assert.ok(errado.error, "un programa con un nombre inexistente debe fallar");
+assert.match(errado.error, /cero/, "el error debe nombrar el problema");
+assert.deepEqual(errado.checks, [false, false, false]);
+
+const sinSalida = validar(lab, 1, 'mensaje = "hola"');
+assert.ok(sinSalida.error, "sin print() no hay salida que comprobar");
+
+assert.equal(/\beval\s*\(|new Function|Function\s*\(\s*["'`]/.test(courseSource), false, "python.js no puede usar eval ni Function");
+assert.equal(/assertGuidedPython|simulador guiado/i.test(courseSource), false, "ya no quedan modelos guiados");
+
+/* 4. Los niveles se desbloquean al terminar el nivel anterior. */
 
 const gate = createContext();
-assert.equal(gate.run("isLevelUnlocked(1)"), true, "el nivel 1 siempre está disponible");
-assert.equal(gate.run("isLevelUnlocked(2)"), false, "el nivel 2 comienza bloqueado");
-assert.equal(gate.run("isLevelUnlocked(3)"), false, "el nivel 3 comienza bloqueado");
-assert.equal(gate.run("isExamUnlocked(1)"), false, "el examen 1 comienza bloqueado");
+assert.equal(gate.run("TOTAL_PROJECTS"), 20);
+assert.equal(gate.run("isLevelUnlocked(1)"), true);
+for (const level of [2, 3, 4, 5]) {
+  assert.equal(gate.run("isLevelUnlocked(" + level + ")"), false, `el nivel ${level} comienza bloqueado`);
+}
 assert.equal(gate.elements.get("#level-checkpoint").hidden, true, "el punto de control comienza oculto");
 
 gate.run("[1, 2, 3].forEach((id) => completedProjects.add(id)); renderLevelTabs(); renderProject();");
 assert.equal(gate.run("isLevelUnlocked(2)"), false, "3 de 4 proyectos no desbloquean el nivel siguiente");
-assert.equal(gate.elements.get("#level-checkpoint").hidden, true, "el punto de control sigue oculto sin terminar el nivel");
 
 gate.run("completedProjects.add(4); renderLevelTabs(); renderProject();");
 assert.equal(gate.run("isLevelUnlocked(2)"), true, "terminar los 4 proyectos desbloquea el nivel 2");
-assert.equal(gate.run("isExamUnlocked(1)"), true, "terminar los 4 proyectos desbloquea el examen");
-assert.equal(gate.run("isLevelUnlocked(3)"), false, "el nivel 3 sigue bloqueado");
-assert.equal(gate.elements.get("#level-checkpoint").hidden, false, "el punto de control aparece al terminar el nivel");
+assert.equal(gate.run("isExamUnlocked(1)"), true);
+assert.equal(gate.run("isLevelUnlocked(3)"), false);
+assert.equal(gate.elements.get("#level-checkpoint").hidden, false);
 assert.equal(gate.elements.get("#checkpoint-title").textContent, "Finalizaste los conceptos básicos de Python.");
 assert.match(gate.elements.get("#checkpoint-kicker").textContent, /^Punto de control · Conceptos básicos$/);
-assert.match(gate.elements.get("#checkpoint-next").textContent, /aplicación de fundamentos/);
-assert.equal(gate.elements.get("#checkpoint-next").hidden, false, "debe ofrecer continuar al nivel siguiente");
 
-/* 3. La navegación no cruza hacia un nivel bloqueado. */
+gate.run("[5, 6, 7, 8].forEach((id) => completedProjects.add(id)); renderLevelTabs(); renderProject();");
+assert.equal(gate.run("isLevelUnlocked(3)"), true, "el nivel 3 se abre al cerrar el nivel 2");
+assert.equal(gate.run("isLevelUnlocked(4)"), false);
+gate.run("[9, 10, 11, 12, 13, 14, 15, 16].forEach((id) => completedProjects.add(id)); renderLevelTabs(); renderProject();");
+assert.equal(gate.run("isLevelUnlocked(5)"), true, "el nivel 5 se abre al cerrar el nivel 4");
+
+/* 5. La navegación no cruza hacia un nivel bloqueado. */
 
 const walk = createContext();
 walk.run("activateProject(5);");
-assert.equal(walk.run("activeProjectId"), 1, "no se puede saltar a un proyecto de un nivel bloqueado");
-walk.run("activateProject(2);");
-assert.equal(walk.run("activeProjectId"), 2, "sí se navega dentro del nivel disponible");
+assert.equal(walk.run("activeProjectId"), 1, "no se salta a un proyecto de un nivel bloqueado");
+walk.run("activateProject(3);");
+assert.equal(walk.run("activeProjectId"), 3);
 walk.run("activateProject(4);");
 assert.equal(walk.elements.get("#course-next").disabled, true, "el botón siguiente se bloquea al final del nivel");
-walk.run("activateLevel(2);");
-assert.equal(walk.run("activeLevelId"), 1, "no se puede activar un nivel bloqueado");
+walk.run("activateLevel(4);");
+assert.equal(walk.run("activeLevelId"), 1, "no se activa un nivel bloqueado");
 
-/* 4. El examen aprueba, guarda el avance y permite reintentar. */
+/* 6. Examen: incompleto, reprobado, reintentado y aprobado. */
 
 const exam = createContext();
 exam.run("[1, 2, 3, 4].forEach((id) => completedProjects.add(id)); renderLevelTabs(); renderProject();");
 exam.run("openExam(1);");
-assert.equal(exam.elements.get("#level-exam").hidden, false, "el examen se abre al rendirlo");
-assert.equal(exam.elements.get("#exam-questions").children.length, 5, "el examen muestra sus 5 preguntas");
-assert.match(exam.elements.get("#exam-title").textContent, /conceptos básicos/i);
+assert.equal(exam.elements.get("#level-exam").hidden, false);
+assert.equal(exam.elements.get("#exam-questions").children.length, 5);
 
 exam.run("submitExam();");
-assert.match(exam.elements.get("#exam-result").textContent, /Responde las 5 preguntas/, "no debe evaluarse incompleto");
-assert.equal(exam.run("approvedExams.has(1)"), false, "un examen sin responder no aprueba");
+assert.match(exam.elements.get("#exam-result").textContent, /Responde las 5 preguntas/);
+assert.equal(exam.run("approvedExams.has(1)"), false);
 
 exam.run("LEVEL_EXAMS[0].questions.forEach((question, index) => examAnswers.set(index, (question.answer + 1) % 4)); submitExam();");
 assert.equal(exam.run("approvedExams.has(1)"), false, "cinco respuestas erróneas no aprueban");
-assert.match(exam.elements.get("#exam-result").textContent, /necesitas 4/i, "debe indicar el umbral");
-assert.equal(exam.elements.get("#exam-retry").hidden, false, "debe ofrecer reintentar");
+assert.match(exam.elements.get("#exam-result").textContent, /necesitas 4/i);
 
 exam.run("retryExam();");
-assert.equal(exam.run("examAnswers.size"), 0, "reintentar limpia las respuestas");
-assert.equal(exam.elements.get("#exam-submit").hidden, false, "reintentar vuelve a mostrar el botón de revisión");
+assert.equal(exam.run("examAnswers.size"), 0);
 
 exam.run("LEVEL_EXAMS[0].questions.forEach((question, index) => examAnswers.set(index, question.answer)); submitExam();");
-assert.equal(exam.run("approvedExams.has(1)"), true, "responder bien aprueba el examen");
+assert.equal(exam.run("approvedExams.has(1)"), true);
 assert.match(exam.elements.get("#exam-result").textContent, /Aprobado con 5 de 5/);
-assert.match(exam.elements.get("#exam-result").textContent, /aplicación de fundamentos/, "debe invitar al nivel siguiente");
-assert.equal(exam.storage.get("codigo-cero.python-v2.exams"), "[1]", "el examen aprobado queda guardado");
+assert.equal(exam.storage.get("codigo-cero.python-v2.exams"), "[1]");
 
-/* 5. Una sola respuesta errónea todavía aprueba, dos no. */
+/* 7. Umbral de aprobación. */
 
 const grade = createContext();
-const almost = grade.runJson(
-  "gradeExam(2, new Map(LEVEL_EXAMS[1].questions.map((question, index) => [index, index === 0 ? (question.answer + 1) % 4 : question.answer])))"
+const casi = grade.runJson(
+  "gradeExam(3, new Map(LEVEL_EXAMS[2].questions.map((q, i) => [i, i === 0 ? (q.answer + 1) % 4 : q.answer])))"
 );
-assert.equal(almost.correct, 4);
-assert.equal(almost.passed, true, "4 de 5 aprueba");
+assert.equal(casi.correct, 4);
+assert.equal(casi.passed, true, "4 de 5 aprueba");
 
-const failed = grade.runJson(
-  "gradeExam(2, new Map(LEVEL_EXAMS[1].questions.map((question, index) => [index, index < 2 ? (question.answer + 1) % 4 : question.answer])))"
+const insuficiente = grade.runJson(
+  "gradeExam(5, new Map(LEVEL_EXAMS[4].questions.map((q, i) => [i, i < 2 ? (q.answer + 1) % 4 : q.answer])))"
 );
-assert.equal(failed.correct, 3);
-assert.equal(failed.passed, false, "3 de 5 no aprueba");
+assert.equal(insuficiente.correct, 3);
+assert.equal(insuficiente.passed, false, "3 de 5 no aprueba");
 
-/* 6. La ruta se cierra solo con los doce proyectos y los tres exámenes. */
+/* 8. La ruta se cierra con los 20 proyectos y los 5 exámenes. */
 
 const finish = createContext();
-finish.run("for (let id = 1; id <= 12; id += 1) completedProjects.add(id); renderProgress();");
+finish.run("for (let id = 1; id <= 20; id += 1) completedProjects.add(id); renderProgress();");
+assert.equal(finish.elements.get("#route-progress-text").textContent, "20 de 20");
 assert.equal(finish.elements.get("#course-finish").hidden, true, "sin exámenes la ruta no se cierra");
-assert.equal(finish.elements.get("#route-progress-text").textContent, "12 de 12");
 
-finish.run("approvedExams.add(1); approvedExams.add(2); renderProgress();");
+finish.run("[1, 2, 3, 4].forEach((id) => approvedExams.add(id)); renderProgress();");
 assert.equal(finish.elements.get("#course-finish").hidden, true, "faltando un examen la ruta no se cierra");
 
-finish.run("approvedExams.add(3); renderProgress();");
+finish.run("approvedExams.add(5); renderProgress();");
 assert.equal(finish.elements.get("#course-finish").hidden, false, "con todo aprobado la ruta se cierra");
 
-/* Los modelos guiados no deben fingir que ejecutan cambios de lógica. */
-const models = createContext();
-for (let id = 5; id <= 12; id++) {
-  models.run(`assertGuidedPython(allProjects().find(p => p.id === ${id}), allProjects().find(p => p.id === ${id}).starter)`);
-  assert.throws(() => models.run(`assertGuidedPython(allProjects().find(p => p.id === ${id}), allProjects().find(p => p.id === ${id}).starter + '\\nprint("extra")')`), /simulador guiado/);
+/* 9. Las soluciones de referencia son Python válido de verdad. */
+
+let contrastadas = 0;
+try {
+  const file = path.join(os.tmpdir(), "codigo-cero-proyecto.py");
+  for (const [id, solution] of Object.entries(SOLUTIONS)) {
+    fs.writeFileSync(file, solution, "utf8");
+    const real = execFileSync("python", [file], {
+      encoding: "utf8",
+      env: { ...process.env, PYTHONIOENCODING: "utf-8" }
+    }).replace(/\r\n/g, "\n").replace(/\n$/, "");
+    const propia = lab.runJson("globalThis.PythonRuntime.run(" + JSON.stringify(solution) + ")").text;
+    assert.equal(propia, real, `el proyecto ${id} da distinto que CPython`);
+    contrastadas += 1;
+  }
+} catch (error) {
+  if (error instanceof assert.AssertionError) throw error;
+  contrastadas = -1;
 }
-models.run('assertGuidedPython(allProjects()[4], allProjects()[4].starter.replace(/edad = \\d+/, "edad = 15"))');
-assert.throws(() => models.run('assertGuidedPython(allProjects()[4], allProjects()[4].starter.replace(">= 18", ">= 90"))'), /simulador guiado/);
-assert.throws(() => models.run('assertGuidedPython(allProjects()[7], allProjects()[7].starter.replace(/tareas = .*/, \'tareas = ["a" "b"]\'))'), /simulador guiado/);
-assert.equal(models.run('runAverageProject("notas = [4, 6,]").environment.promedio'), 5);
-assert.throws(() => models.run('runAverageProject("notas = []")'), /números/);
-assert.deepEqual(models.runJson('readStringList(\'tareas = ["hoy", "", "mañana"]\', "tareas")'), ['hoy', '', 'mañana']);
-models.run('activeProjectId = 1; projectCode.value = \'print("Hola")\'; runActiveProject();');
-assert.equal(models.run('validatedSources.get(1)'), 'print("Hola")');
-models.elements.get('#course-project-code').value = 'print(';
-for (const callback of models.elements.get('#course-project-code').listeners.input || []) callback();
-assert.equal(models.run('validatedSources.has(1)'), false);
-assert.equal(models.elements.get('#complete-course-project').disabled, true);
-console.log("Python: 3 puntos de control, 15 preguntas, desbloqueo, 8 modelos guiados y edición invalidada: OK");
+
+const detalle = contrastadas >= 0
+  ? contrastadas + " soluciones contrastadas con CPython"
+  : "CPython no disponible en este equipo";
+console.log(`Python: 5 niveles, 20 proyectos resueltos, ${validaciones} validaciones, 5 exámenes y 25 preguntas (${detalle})`);

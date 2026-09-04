@@ -11,12 +11,15 @@ repositorio `PabSepul/SpanaPS.github.io`; no se migró el hosting ni se añadier
 - Respaldo previo local: `38667bf`, con todo el desarrollo que estaba sin confirmar.
 - Portada: avance en las ocho tarjetas, grupos separados de rutas y mini cursos y «Continuar donde quedaste».
 - `learning-state.js`: conserva las claves anteriores; añade módulo activo, fecha y borradores por ruta.
-- `catalog.js`: muestra proyectos/módulos y exámenes por separado; una ruta extensa exige 12 + 3 exámenes.
+- `catalog.js`: muestra proyectos/módulos y exámenes por separado; cada ruta exige todos sus módulos y un examen
+  por nivel (Python: 20 + 5; las demás: 12 + 3). El número de exámenes se deduce de `count / 4`.
 - `learning-guidance.js`: 24 ayudas (HTML/CSS y JavaScript) con resultado esperado y error frecuente.
 - `learning-review.css`: ajustes de lectura, controles y anchura de editores móviles en ambos temas.
-- Python: cambios de código invalidan la validación pendiente. Los proyectos 5–12 son modelos guiados;
-  cambiar su lógica o sangría muestra un error explícito. Solo se pueden modificar los datos indicados.
-- Los niveles se describen como básicos, aplicación e integración, sin prometer dominio «experto».
+- Python: cambios de código invalidan la validación pendiente. Los veinte proyectos se ejecutan con el intérprete
+  real de `python-runtime.js`, así que aceptan cualquier solución válida; las validaciones revisan la salida y las
+  variables, no la forma del texto.
+- Los niveles de Python se llaman por su contenido: conceptos básicos, decisiones y ciclos, colecciones de datos,
+  funciones propias e integración final. No se promete dominio «experto».
 - Navegación con teclado en pestañas y foco de los exámenes mejorados.
 
 ### Revisar el sitio montado sin abrirlo al público
@@ -31,12 +34,43 @@ incluyen el parámetro para funcionar incluso si el almacenamiento está bloquea
 No hay credenciales: **es una vista previa por enlace, no autenticación ni privacidad**; fuente y contenido
 siguen siendo públicos. Ambos modos declaran `noindex, nofollow`.
 
+
+### Intérprete de Python del 3 de septiembre de 2026
+
+`python-runtime.js` reemplazó al intérprete de una línea y a los ocho modelos guiados. Es un intérprete escrito para
+el proyecto: tokenizador con INDENT/DEDENT, analizador sintáctico descendente y evaluador propio.
+
+Qué reconoce:
+
+- Enteros y decimales con la distinción real de Python (`10 / 5` da `2.0`, `10 // 5` da `2`).
+- Textos, f-strings con expresiones y formato `:.2f`, listas, diccionarios, tuplas, rebanadas y desempaquetado.
+- `if` / `elif` / `else`, `for`, `for ... in ... .items()`, `while`, `break`, `continue`, expresiones condicionales.
+- `def` con parámetros por defecto y argumentos con nombre, `return`, recursión y comprensiones de listas.
+- `try` / `except NombreDelError` / `finally` y `raise ValueError("...")`.
+- Más de cuarenta funciones y métodos: `print` (con `sep` y `end`), `len`, `range`, `sum`, `min`, `max`, `abs`,
+  `round` (mitad al par, como CPython), `int`, `float`, `str`, `bool`, `list`, `dict`, `tuple`, `sorted` (con `key`
+  y `reverse`), `reversed`, `enumerate`, `zip`, `type`, más los métodos habituales de texto, listas y diccionarios.
+
+Qué no reconoce, y lo dice en pantalla en vez de simular: `import`, `input()`, `lambda`, clases y archivos.
+
+Garantías que no se deben romper:
+
+- No usa `eval`, `Function` ni ejecución nativa. Hay una prueba que lo verifica sobre el texto del archivo.
+- Límite de pasos, de profundidad de llamadas y de líneas de salida: un ciclo infinito se detiene con un aviso.
+- El acceso a métodos usa tablas explícitas por tipo, así que no se llega al prototipo de JavaScript.
+- Los errores se explican en español con el número de línea y el nombre del error de Python.
+
+La fidelidad se comprueba contra CPython 3.12: `python-runtime.test.mjs` guarda 65 programas con su salida real y la
+vuelve a comparar en vivo si el equipo tiene Python; `python-checkpoints.test.mjs` hace lo mismo con las 20 soluciones
+de referencia de los proyectos. Si se agrega contenido nuevo, conviene ampliar esas listas antes que ajustar el motor.
+
 ### Verificación y próximos pasos
 
-Ejecutar las seis suites antes de publicar nuevos cambios:
+Ejecutar las siete suites antes de publicar nuevos cambios:
 
 ```powershell
 node starter-course.test.mjs
+node python-runtime.test.mjs
 node python-checkpoints.test.mjs
 node sql-guide.test.mjs
 node mini-courses.test.mjs
@@ -109,7 +143,7 @@ Cuando se detecta el dominio público se agrega la clase `is-maintenance`, se oc
 ### Solo en local, todavía sin commit ni publicación
 
 - La portada fue separada del contenido educativo y ahora funciona como catálogo de rutas.
-- Python tiene una página propia con 3 niveles, 12 proyectos, explicaciones, pistas, validaciones y progreso independiente.
+- Python tiene una página propia con 5 niveles, 20 proyectos, explicaciones, pistas, validaciones y progreso independiente.
 - **HTML/CSS, JavaScript y SQL alcanzaron la misma profundidad: 3 niveles y 12 módulos cada una.**
 - Las tres rutas comparten el motor de `starter-course.js` y los intérpretes de `starter-runtime.js`.
 - El selector de tema vive en `site.js` y se comparte entre todas las páginas.
@@ -201,7 +235,7 @@ Como el número de módulos cambió, el progreso guardado usa claves nuevas para
 
 ### Puntos de control y mini exámenes de Python
 
-La ruta de Python dejó de ser una lista continua de doce proyectos y ahora avanza por etapas.
+La ruta de Python avanza por etapas: 5 niveles de 4 proyectos con un mini examen cada uno.
 
 - Cada nivel declara su etapa (`stage`): conceptos básicos, avanzados y expertos.
 - Al comenzar solo el nivel 1 está disponible. El nivel siguiente se desbloquea cuando los cuatro proyectos del
@@ -211,7 +245,7 @@ La ruta de Python dejó de ser una lista continua de doce proyectos y ahora avan
   examen y el acceso directo al nivel siguiente.
 - Cada nivel tiene un mini examen de 5 preguntas de selección múltiple con 4 alternativas, explicación por pregunta y
   umbral de 4 aciertos. Se puede reintentar cuantas veces se quiera y al aprobar queda registrado.
-- La ruta se marca como completada solo con los 12 proyectos y los 3 exámenes aprobados.
+- La ruta se marca como completada solo con los 20 proyectos y los 5 exámenes aprobados.
 
 Los exámenes aprobados se guardan aparte del avance de proyectos, en `codigo-cero.python-v2.exams`.
 
@@ -460,7 +494,8 @@ intenta/
 ├── mini-course.js / mini-course.css # Interfaz, modelos visibles y progreso independiente
 ├── mini-courses.test.mjs    # Doce proyectos y cien combinaciones
 ├── site.js                  # Tema compartido y año del footer
-├── python.js                # 12 proyectos, intérprete, puntos de control y exámenes de Python
+├── python-runtime.js        # Intérprete de Python del laboratorio (contrastado con CPython)
+├── python.js                # 20 proyectos, puntos de control y exámenes de Python
 ├── starter-runtime.js       # Intérprete de JavaScript y motor de SQL
 ├── sql-course.js            # 12 lecciones didácticas y 3 desafíos extra de SQL
 ├── sql-guide.js             # Explorador, tablas de resultados y guía didáctica
@@ -485,7 +520,7 @@ intenta/
 
 `python.js`
 
-- Contiene la estructura de los 3 niveles y 12 proyectos de Python.
+- Contiene la estructura de los 5 niveles y 20 proyectos de Python.
 - Renderiza lecciones, pistas, navegación y validaciones.
 - Ejecuta únicamente el subconjunto de Python permitido por los ejercicios.
 - Guarda el progreso de proyectos en `codigo-cero.python-v2.completed` y los exámenes aprobados en `codigo-cero.python-v2.exams`.

@@ -20,7 +20,8 @@
       progress.textContent = route.completed + "/" + route.count + " " + route.unit;
       details.textContent = route.done ? "✓ Ruta completada · puedes repasar"
         : route.mini ? (route.started ? "En curso · práctica guiada" : "Introducción guiada")
-        : route.exams + "/3 exámenes aprobados" + (route.completed === 12 ? " · termina los pendientes" : "");
+        : route.exams + "/" + Math.ceil(route.count / 4) + " exámenes aprobados"
+          + (route.completed === route.count ? " · termina los pendientes" : "");
       fill.style.width = route.percent + "%";
       card.querySelector("[data-route-action]").textContent = route.done ? "Repasar ruta →" : route.started ? "Continuar aprendiendo →" : route.mini ? "Abrir mini curso →" : "Abrir ruta →";
       card.href = routeLink(route.started ? route.href : route.path);
@@ -31,7 +32,9 @@
       document.querySelector("#continue-title").textContent = "Continúa con " + recent.name;
       document.querySelector("#continue-description").textContent = (recent.mini ? "Mini proyecto " : recent.id === "python" ? "Proyecto " : "Módulo ")
         + (recent.active + 1) + " de " + recent.count + " · Completados: " + recent.completed + "."
-        + (!recent.mini && recent.completed === 12 && recent.exams < 3 ? " Te quedan exámenes para cerrar la ruta." : " Retoma tus elecciones y borradores.");
+        + (!recent.mini && recent.completed === recent.count && recent.exams < Math.ceil(recent.count / 4)
+          ? " Te quedan exámenes para cerrar la ruta."
+          : " Retoma tus elecciones y borradores.");
       document.querySelector("#continue-link").href = routeLink(recent.href);
     }
     document.querySelector("#catalog-storage").textContent = state.storageAvailable()
